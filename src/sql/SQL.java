@@ -1,6 +1,7 @@
 package sql;
 import java.sql.*;
 import java.util.*;
+import java.util.zip.DataFormatException;
 import java.time.LocalDate;
 import sql.account.*;
 import sql.product.*;
@@ -91,6 +92,28 @@ public class SQL {
         } catch (SQLException e) {
             throw new DatabaseException("Database exception occurred.", e);
         }
+    }
+
+    public boolean addNewProduct(Product product) throws DatabaseException {
+        String sq = "INSERT INT PRODUCTS (PRODUCT_NAME, DESCRIPTION, TOTAL_STOCK, CURRENT_STOCK, NUM_RESERVATION, RENTAL_FEE, IMAGE_URL, RENTAL_PERIOD, EARLIEST_RENTAL_START) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        try (PreparedStatement ps = conn.prepareStatement(sq)) {
+            ps.setString(1, product.getProductName());
+            ps.setString(2, product.getDescription());
+            ps.setInt(3, product.getTotalStock());
+            ps.setInt(4, product.getCurrentStock());
+            ps.setInt(5, product.getNumReservation());
+            ps.setInt(6, product.getRentalFee());
+            ps.setString(7, product.getImageURL());
+            ps.setInt(8, product.getRentalFee());
+            String dateStr = product.getEarliestRentalStart().toString();
+            ps.setString(9, dateStr);
+
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new DatabaseException("Failed to insert new product int PRODUCTS table.", e);
+        }
+
+        return true;
     }
 
     public boolean addNewRentalProduct(Product product, int userID) throws RentalFailedException, NoResultsFoundException, DatabaseException {
