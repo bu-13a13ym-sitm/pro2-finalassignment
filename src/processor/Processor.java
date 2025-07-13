@@ -35,7 +35,7 @@ public class Processor {
         //
     }
 
-    public ArrayList<Product> getProducts(int minPrice, int maxPrice, boolean immediate) {
+    public ArrayList<Product> getProducts(Integer minPrice, Integer maxPrice, Boolean immediate) {
         //
     }
 
