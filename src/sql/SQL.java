@@ -94,7 +94,7 @@ public class SQL {
     }
 
     public boolean addNewProduct(Product product) throws DatabaseException {
-        String sq = "INSERT INT PRODUCTS (PRODUCT_NAME, DESCRIPTION, TOTAL_STOCK, CURRENT_STOCK, NUM_RESERVATION, RENTAL_FEE, IMAGE_URL, RENTAL_PERIOD, EARLIEST_RENTAL_START) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String sq = "INSERT INTO PRODUCTS (PRODUCT_NAME, DESCRIPTION, TOTAL_STOCK, CURRENT_STOCK, NUM_RESERVATION, RENTAL_FEE, IMAGE_URL, RENTAL_PERIOD, EARLIEST_RENTAL_START) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement ps = conn.prepareStatement(sq)) {
             ps.setString(1, product.getProductName());
             ps.setString(2, product.getDescription());
