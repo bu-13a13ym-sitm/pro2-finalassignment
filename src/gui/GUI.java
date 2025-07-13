@@ -1,9 +1,13 @@
 package gui;
 import javax.swing.*;
-import javax.swing.border.Border;
-
 import java.awt.*;
 import java.awt.event.*;
+import java.io.File;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Locale;
+
 import processor.*;
 import processor.exceptions.*;
 import sql.*;
@@ -75,7 +79,7 @@ public class GUI {
 
         JPanel panel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(2, 3, 2, 3);
+        gbc.insets = new Insets(5, 2, 5, 2);
         int currRow = 0;
 
         this.setGBCgrid(gbc, 0, currRow, 4, 2);
@@ -112,7 +116,7 @@ public class GUI {
         this.setGBCgrid(gbc, 4, currRow, 1, 1);
         panel.add(loginButton, gbc);
 
-        panel.setBorder(BorderFactory.createEmptyBorder(3, 5, 3, 5));
+        panel.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
         this.frame.getContentPane().add(panel, BorderLayout.CENTER);
 
         this.frame.revalidate();
@@ -192,7 +196,7 @@ public class GUI {
 
         JPanel panel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(2, 3, 2, 3);
+        gbc.insets = new Insets(5, 2, 5, 2);
         int currRow = 0;
 
         this.setGBCgrid(gbc, 0, currRow, 4, 2);
@@ -244,7 +248,7 @@ public class GUI {
         this.setGBCgrid(gbc, 4, currRow, 1, 1);
         panel.add(registerButton, gbc);
 
-        panel.setBorder(BorderFactory.createEmptyBorder(3, 5, 3, 5));
+        panel.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
         this.frame.getContentPane().add(panel, BorderLayout.CENTER);
 
         this.frame.revalidate();
@@ -291,15 +295,185 @@ public class GUI {
     }
 
     public void showProductPage() {
-        //
+        this.frame.getContentPane().removeAll();
+
+        JLabel errorLabel = new JLabel();
+
+        JPanel searchPanel = new JPanel();
+        searchPanel.setLayout(new BoxLayout(searchPanel, BoxLayout.X_AXIS));
+
+        JPanel resultPanel = new JPanel();
+        resultPanel.setBorder(BorderFactory.createEmptyBorder(1, 2, 1, 2));
+
+        JLabel minPriceLabel = new JLabel("Min Price:");
+        JTextField minPriceField = new JTextField();
+
+        JLabel maxPriceLabel = new JLabel("Max Price:");
+        JTextField maxPriceField = new JTextField();
+
+        JCheckBox immCheckBox = new JCheckBox("Available Immediately");
+
+        JButton searchButton = new JButton("SEARCH");
+        searchButton.addActionListener(new ShowProducts(errorLabel, minPriceField, maxPriceField, immCheckBox, resultPanel));
+
+        searchPanel.add(minPriceLabel);
+        searchPanel.add(minPriceField);
+        
+        searchPanel.add(maxPriceLabel);
+        searchPanel.add(maxPriceField);
+
+        searchPanel.add(immCheckBox);
+
+        searchPanel.add(searchButton);
+
+        showProducts(null, null, null, resultPanel, errorLabel);
+
+        JScrollPane resultScrollPanel = new JScrollPane(resultPanel);
+        resultScrollPanel.createVerticalScrollBar();
+        resultScrollPanel.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+
+        panel.add(searchPanel);
+        panel.add(resultScrollPanel);
+
+        panel.setBorder(BorderFactory.createEmptyBorder(3, 5, 3, 5));
+        this.frame.getContentPane().add(panel, BorderLayout.CENTER);
+
+        this.frame.revalidate();
+        this.frame.repaint();
+        this.frame.pack();
+        if (!this.frame.isVisible()) this.frame.setVisible(true);
+    }
+    
+    class ShowProducts implements ActionListener {
+        JLabel errorLabel;
+        JTextField minPriceField;
+        JTextField maxPriceField;
+        JCheckBox immCheckBox;
+        JPanel resultPanel;
+
+        public ShowProducts(JLabel errorLabel, JTextField minPriceField, JTextField maxPriceField, JCheckBox immCheckBox, JPanel resultPanel) {
+            this.errorLabel = errorLabel;
+            this.minPriceField = minPriceField;
+            this.maxPriceField = maxPriceField;
+            this.immCheckBox = immCheckBox;
+            this.resultPanel = resultPanel;
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            String minPriceStr = this.minPriceField.getText().trim();
+            Integer minPrice = (!minPriceStr.isEmpty()) ? Integer.parseInt(minPriceStr) : null;
+            String maxPriceStr = this.maxPriceField.getText().trim();
+            Integer maxPrice = (!maxPriceStr.isEmpty()) ? Integer.parseInt(maxPriceStr) : null;
+            Boolean immediate = this.immCheckBox.isSelected();
+
+            showProducts(minPrice, maxPrice, immediate, this.resultPanel, this.errorLabel);
+        }
     }
 
-    public void showProducts() {
-        //
+    public void showProducts(Integer minPrice, Integer maxPrice, Boolean immediate, JPanel resultPanel, JLabel errorLabel) {
+        resultPanel.removeAll();
+
+        try {
+            ArrayList<Product> searchResults = this.processor.getProducts(minPrice, maxPrice, immediate);
+            resultPanel.setLayout(new GridLayout(0, 2, 10, 10));
+            for (Product product : searchResults) {
+                JPanel productPanel = new JPanel(new BorderLayout());
+
+                ImageIcon imageIcon;
+                File imageFile = new File(product.getImageURL());
+                if (imageFile.exists()) imageIcon = new ImageIcon(product.getImageURL());
+                else imageIcon = new ImageIcon("images/no_image.png");
+                Image productImg = imageIcon.getImage();
+                JLabel imgLabel = new JLabel(new ImageIcon(productImg));
+                imgLabel.setHorizontalAlignment(SwingConstants.CENTER);
+
+                JPanel infoPanel = new JPanel();
+                infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
+
+                JPanel upperRow = new JPanel(new BorderLayout());
+                upperRow.add(new JLabel(product.getProductName()), BorderLayout.WEST);
+                upperRow.add(new JLabel("\u00A5" + product.getRentalFee()), BorderLayout.EAST);
+
+                JPanel lowerRow = new JPanel(new BorderLayout());
+                JLabel immLabel = new JLabel();
+                immLabel.setHorizontalAlignment(SwingConstants.RIGHT);
+                LocalDate today = LocalDate.now();
+                LocalDate earliestRentalStart = product.getEarliestRentalStart();
+                if (earliestRentalStart != null && today.isBefore(earliestRentalStart)) {
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMM dd, yyyy", Locale.ENGLISH);
+                    immLabel.setText("Earliest Available Date: " + earliestRentalStart.format(formatter));
+                } else immLabel.setText("<html><span style='color: orange;'>Available Immediately!</span></html>");
+                lowerRow.add(immLabel, BorderLayout.EAST);
+
+                infoPanel.add(upperRow);
+                infoPanel.add(lowerRow);
+
+                productPanel.add(imgLabel, BorderLayout.NORTH);
+                productPanel.add(infoPanel, BorderLayout.SOUTH);
+
+                productPanel.addMouseListener(new ShowProductDetail(product));
+
+                productPanel.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
+                resultPanel.add(productPanel);
+            }
+        } catch (Exception ex) {
+            resultPanel.setLayout(new GridLayout(0, 1));
+            errorLabel.setText(ex.getMessage());
+            resultPanel.add(errorLabel);
+            resultPanel.setBorder(BorderFactory.createEmptyBorder(20, 10, 20, 10));
+        }
+
+        resultPanel.revalidate();
+        resultPanel.repaint();
     }
 
-    public void showProductDetail() {
-        //
+    class ShowProductDetail extends MouseAdapter {
+        Product product;
+
+        public ShowProductDetail(Product product) {
+            this.product = product;
+        }
+
+        @Override
+        public void mouseClicked(MouseEvent e) {
+            showProductDetail(product);
+        }
+    }
+
+    public void showProductDetail(Product product) {
+        JDialog detailDialog = new JDialog(this.frame, "Product Detail", true);
+        detailDialog.setLayout(new BorderLayout());
+
+        ImageIcon imageIcon;
+        File imageFile = new File(product.getImageURL());
+        if (imageFile.exists()) imageIcon = new ImageIcon(product.getImageURL());
+        else imageIcon = new ImageIcon("images/no_image.png");
+        Image productImg = imageIcon.getImage();
+        JLabel imgLabel = new JLabel(new ImageIcon(productImg));
+        imgLabel.setHorizontalAlignment(SwingConstants.CENTER);
+
+        JPanel infoPanel = new JPanel();
+        infoPanel.setLayout(new  BoxLayout(infoPanel, BoxLayout.Y_AXIS));
+        
+        infoPanel.add(new JLabel("<html><h1>" + product.getProductName() + "</h1></html>"));
+        infoPanel.add(new JLabel("\u00A5" + product.getRentalFee()));
+
+        JButton closeButton = new JButton("Close");
+        closeButton.addActionListener(e -> detailDialog.dispose());
+        JPanel btnPanel = new JPanel();
+        btnPanel.add(closeButton);
+
+        detailDialog.add(imgLabel);
+        detailDialog.add(infoPanel);
+        detailDialog.add(btnPanel);
+
+        detailDialog.pack();
+        detailDialog.setLocationRelativeTo(frame);
+        detailDialog.setVisible(true);
     }
 
     public void rental() {
