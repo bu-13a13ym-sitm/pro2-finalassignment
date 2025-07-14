@@ -19,7 +19,7 @@ public class RegisterProduct {
                 String[] fields = line.split(",");
                 int productID = 0;
                 String productName = fields[0].trim();
-                String description = fields[1].trim();
+                String description = fields[1].trim().replace("_", ",");
                 int totalStock = Integer.parseInt(fields[2].trim());
                 int currentStock = totalStock;
                 int numReservation = 0;
