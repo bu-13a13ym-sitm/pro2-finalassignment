@@ -380,6 +380,7 @@ public class GUI {
         try {
             ArrayList<Product> searchResults = this.processor.getProducts(minPrice, maxPrice, immediate);
             resultPanel.setLayout(new GridLayout(0, 2, 10, 10));
+            
             for (Product product : searchResults) {
                 JPanel productPanel = new JPanel(new BorderLayout());
 
@@ -464,24 +465,45 @@ public class GUI {
 
         JButton closeButton = new JButton("Close");
         closeButton.addActionListener(e -> detailDialog.dispose());
+        
+
+        JButton actionBtn;
+        if (product.getCurrentStock() >= 1){
+            actionBtn = new JButton("Rental");
+            actionBtn.addActionListener(new Rental());
+        }else {
+            actionBtn = new JButton("Reserve");
+            actionBtn.addActionListener(new Reserve());
+        }
+
+
         JPanel btnPanel = new JPanel();
         btnPanel.add(closeButton);
+        btnPanel.add(actionBtn);
 
-        detailDialog.add(imgLabel);
-        detailDialog.add(infoPanel);
-        detailDialog.add(btnPanel);
+
+
+        detailDialog.add(imgLabel, BorderLayout.NORTH);
+        detailDialog.add(infoPanel, BorderLayout.CENTER);
+        detailDialog.add(btnPanel, BorderLayout.SOUTH);
 
         detailDialog.pack();
         detailDialog.setLocationRelativeTo(frame);
         detailDialog.setVisible(true);
     }
 
-    public void rental() {
-        //
+    class Rental implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+           
+        }
     }
 
-    public void reserve() {
-        //
+    class Reserve implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            
+        }
     }
 
     public void showRentalStatePage() {
