@@ -13,7 +13,7 @@ public class RegisterProduct {
         String path = "src/scraping/productList.csv";
         try {
             SQL sql = new SQL();
-            List<String> lines = Files.readAllLines(Paths.get(path));
+            List<String> lines = Files.readAllLines(Paths.get("images/" + path));
             for (int i = 1; i < lines.size(); i++) {
                 String line = lines.get(i);
                 String[] fields = line.split(",");
