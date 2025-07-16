@@ -395,6 +395,7 @@ public class GUI {
         try {
             ArrayList<Product> searchResults = this.processor.getProducts(minPrice, maxPrice, immediate);
             resultPanel.setLayout(new GridLayout(0, 2, 10, 10));
+            
             for (Product product : searchResults) {
                 JPanel productPanel = new JPanel(new BorderLayout());
 
@@ -508,45 +509,45 @@ public class GUI {
 
         JButton closeButton = new JButton("Close");
         closeButton.addActionListener(e -> detailDialog.dispose());
+        
 
-        btnPanel.add(closeButton, BorderLayout.WEST);
-
-        if (product.getCurrentStock() > 0) {
-            JButton rentalButton = new JButton("RENTAL");
-            rentalButton.addActionListener(new Rental(product));
-
-            btnPanel.add(rentalButton, BorderLayout.EAST);
-        } else {
-            JLabel earliestRentalStartLabel = new JLabel();
-            LocalDate earliestRentalStart = product.getEarliestRentalStart();
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMM dd", Locale.ENGLISH);
-            earliestRentalStartLabel.setText("Earliest Available Date: " + earliestRentalStart.format(formatter));
-            earliestRentalStartLabel.setHorizontalAlignment(SwingConstants.RIGHT);
-
-            JButton reserveButton = new JButton("RESERVE");
-            reserveButton.addActionListener(new Reserve(product));
-
-            btnPanel.add(earliestRentalStartLabel, BorderLayout.CENTER);
-            btnPanel.add(reserveButton, BorderLayout.EAST);
+        JButton actionBtn;
+        if (product.getCurrentStock() >= 1){
+            actionBtn = new JButton("Rental");
+            actionBtn.addActionListener(new Rental());
+        }else {
+            actionBtn = new JButton("Reserve");
+            actionBtn.addActionListener(new Reserve());
         }
 
-        btnPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
-        detailDialog.add(imgLabel);
-        detailDialog.add(infoPanel);
-        detailDialog.add(btnPanel);
+        JPanel btnPanel = new JPanel();
+        btnPanel.add(closeButton);
+        btnPanel.add(actionBtn);
+
+
+
+        detailDialog.add(imgLabel, BorderLayout.NORTH);
+        detailDialog.add(infoPanel, BorderLayout.CENTER);
+        detailDialog.add(btnPanel, BorderLayout.SOUTH);
 
         detailDialog.pack();
         detailDialog.setLocationRelativeTo(frame);
         detailDialog.setVisible(true);
     }
 
-    public void rental() {
-        //
+    class Rental implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+           
+        }
     }
 
-    public void reserve() {
-        //
+    class Reserve implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            
+        }
     }
 
     class ShowRentalStatePage implements ActionListener {
