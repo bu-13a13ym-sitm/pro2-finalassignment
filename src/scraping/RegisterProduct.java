@@ -29,12 +29,16 @@ public class RegisterProduct {
                 LocalDate earliestRentalStart = null;
 
                 Product product = new Product(productID, productName, description, totalStock, currentStock, numReservation, rentalFee, imageURL, rentalPeriod, earliestRentalStart);
-                sql.addNewProduct(product);
+                try {
+                    sql.addNewProduct(product);
+                } catch (DatabaseException e) {
+                    System.out.println("Failed to add product at row " + i + line);
+                }
             }
         } catch (DatabaseException e) {
-
+            System.out.println(e.getMessage());
         } catch (IOException e) {
-
+            System.out.println(e.getMessage());
         }
     }
 }
