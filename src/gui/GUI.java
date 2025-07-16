@@ -395,18 +395,24 @@ public class GUI {
                 infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
 
                 JPanel upperRow = new JPanel(new BorderLayout());
-                upperRow.add(new JLabel(product.getProductName()), BorderLayout.WEST);
-                upperRow.add(new JLabel("\u00A5" + product.getRentalFee()), BorderLayout.EAST);
+                
+                JLabel nameLabel = new JLabel(product.getProductName());
+                JLabel rentalFeeLabel = new JLabel("\u00A5" + product.getRentalFee());
+                rentalFeeLabel.setHorizontalAlignment(SwingConstants.RIGHT);
+
+                upperRow.add(nameLabel, BorderLayout.WEST);
+                upperRow.add(rentalFeeLabel, BorderLayout.EAST);
 
                 JPanel lowerRow = new JPanel(new BorderLayout());
+
                 JLabel immLabel = new JLabel();
                 immLabel.setHorizontalAlignment(SwingConstants.RIGHT);
-                LocalDate today = LocalDate.now();
-                LocalDate earliestRentalStart = product.getEarliestRentalStart();
-                if (earliestRentalStart != null && today.isBefore(earliestRentalStart)) {
-                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMM dd, yyyy", Locale.ENGLISH);
+                if (product.getCurrentStock() > 0) {
+                    LocalDate earliestRentalStart = product.getEarliestRentalStart();
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMM dd", Locale.ENGLISH);
                     immLabel.setText("Earliest Available Date: " + earliestRentalStart.format(formatter));
                 } else immLabel.setText("<html><span style='color: orange;'>Available Immediately!</span></html>");
+
                 lowerRow.add(immLabel, BorderLayout.EAST);
 
                 infoPanel.add(upperRow);
@@ -446,7 +452,7 @@ public class GUI {
 
     public void showProductDetail(Product product) {
         JDialog detailDialog = new JDialog(this.frame, "Product Detail", true);
-        detailDialog.setLayout(new BorderLayout());
+        detailDialog.setLayout(new BoxLayout(detailDialog, BoxLayout.Y_AXIS));
 
         ImageIcon imageIcon;
         File imageFile = new File(product.getImageURL());
@@ -457,15 +463,57 @@ public class GUI {
         imgLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
         JPanel infoPanel = new JPanel();
-        infoPanel.setLayout(new  BoxLayout(infoPanel, BoxLayout.Y_AXIS));
+        infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
+
+        JPanel headerPanel = new JPanel();
+        headerPanel.setLayout(new BorderLayout());
+
+        JLabel nameLabel = new JLabel("<html><h1>" + product.getProductName() + "</h1></html>");
+        JLabel rentalFeeLabel = new JLabel("\u00A5" + product.getRentalFee());
+        rentalFeeLabel.setHorizontalAlignment(SwingConstants.RIGHT);
+
+        headerPanel.add(nameLabel, BorderLayout.WEST);
+        headerPanel.add(rentalFeeLabel, BorderLayout.EAST);
+        headerPanel.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+
+        JPanel detailPanel = new JPanel(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
+
+        JTextArea descriptionArea = new JTextArea(product.getDescription().replace(".", ".\n"));
+        descriptionArea.setEditable(false);
+
+        detailPanel.add(descriptionArea);
+        detailPanel.setBorder(BorderFactory.createEmptyBorder(5, 15, 5, 15));
+
+        infoPanel.add(headerPanel);
+        infoPanel.add(detailPanel);
         
-        infoPanel.add(new JLabel("<html><h1>" + product.getProductName() + "</h1></html>"));
-        infoPanel.add(new JLabel("\u00A5" + product.getRentalFee()));
+        JPanel btnPanel = new JPanel(new BorderLayout());
 
         JButton closeButton = new JButton("Close");
         closeButton.addActionListener(e -> detailDialog.dispose());
-        JPanel btnPanel = new JPanel();
-        btnPanel.add(closeButton);
+
+        btnPanel.add(closeButton, BorderLayout.WEST);
+
+        if (product.getCurrentStock() > 0) {
+            JButton rentalButton = new JButton("RENTAL");
+            rentalButton.addActionListener(new Rental(product));
+
+            btnPanel.add(rentalButton, BorderLayout.EAST);
+        } else {
+            JLabel earliestRentalStartLabel = new JLabel();
+            LocalDate earliestRentalStart = product.getEarliestRentalStart();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMM dd", Locale.ENGLISH);
+            earliestRentalStartLabel.setText("Earliest Available Date: " + earliestRentalStart.format(formatter));
+            earliestRentalStartLabel.setHorizontalAlignment(SwingConstants.RIGHT);
+
+            JButton reserveButton = new JButton("RESERVE");
+            reserveButton.addActionListener(new Reserve(product));
+
+            btnPanel.add(earliestRentalStartLabel, BorderLayout.CENTER);
+            btnPanel.add(reserveButton, BorderLayout.EAST);
+        }
+
+        btnPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
         detailDialog.add(imgLabel);
         detailDialog.add(infoPanel);
