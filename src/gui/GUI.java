@@ -294,8 +294,23 @@ public class GUI {
         }
     }
 
+    class ShowProductPage implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            showProductPage();
+        }
+    }
+
     public void showProductPage() {
         this.frame.getContentPane().removeAll();
+
+        JPanel headerPanel = new JPanel();
+        headerPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
+
+        JButton showRentalStatePageButton = new JButton("Show Rental State Page");
+        showRentalStatePageButton.addActionListener(new ShowRentalStatePage());
+
+        headerPanel.add(showRentalStatePageButton);
 
         JLabel errorLabel = new JLabel();
 
@@ -335,6 +350,7 @@ public class GUI {
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
+        panel.add(headerPanel);
         panel.add(searchPanel);
         panel.add(resultScrollPanel);
 
@@ -532,8 +548,35 @@ public class GUI {
         //
     }
 
+    class ShowRentalStatePage implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            showRentalStatePage();
+        }
+    }
+
     public void showRentalStatePage() {
-        //
+        this.frame.getContentPane().removeAll();
+
+        JPanel headerPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+
+        JButton showProductsButton = new JButton("Show Product Page");
+        showProductsButton.addActionListener(new ShowProductPage());
+
+        headerPanel.add(showProductsButton);
+
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+
+        panel.setBorder(BorderFactory.createEmptyBorder(3, 5, 3, 5));
+        this.frame.getContentPane().add(panel, BorderLayout.CENTER);
+
+        frame.add(headerPanel);
+
+        this.frame.revalidate();
+        this.frame.repaint();
+        this.frame.pack();
+        if (!this.frame.isVisible()) this.frame.setVisible(true);
     }
 
     public void showReturnDialog() {
