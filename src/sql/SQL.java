@@ -234,12 +234,18 @@ public class SQL {
 
     public ArrayList<RentalProduct> getRentalProducts(int userID) throws NoResultsFoundException, DatabaseException{
         ArrayList<RentalProduct> rentalProducts = new ArrayList<>();
-        String sq = "SELECT * FROM RENTAL_PRODUCTS WHERE USER_ID = ?";
-        try (PreparedStatement ps = conn.prepareStatement(sq)) {
-            ps.setInt(1, userID);
-            try (ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) {
-                    rentalProducts.add(new RentalProduct(rs));
+        String sq1 = "SELECT * FROM RENTAL_PRODUCTS WHERE USER_ID = ?";
+        try (PreparedStatement ps1 = conn.prepareStatement(sq1)) {
+            ps1.setInt(1, userID);
+            try (ResultSet rs1 = ps1.executeQuery()) {
+                while (rs1.next()) {
+                    String sq2 = "SELECT * FROM PRODUCTS WHERE PRODUCT_ID = ?";
+                    try (PreparedStatement ps2 = conn.prepareStatement(sq2)) {
+                        ps2.setInt(1, rs1.getInt("PRODUCT_ID"));
+                        try (ResultSet rs2 = ps2.executeQuery()) {
+                            rentalProducts.add(new RentalProduct(rs1, rs2));
+                        }
+                    }
                 }
                 if (rentalProducts.isEmpty()) throw new NoResultsFoundException("Rental products not found.");
             }
@@ -252,12 +258,18 @@ public class SQL {
     
     public ArrayList<ReservedProduct> getReservedProducts(int userID) throws NoResultsFoundException, DatabaseException{
         ArrayList<ReservedProduct> reservedProducts = new ArrayList<>();
-        String sq = "SELECT * FROM RESERVED_PRODUCTS WHERE USER_ID = ?";
-        try (PreparedStatement ps = conn.prepareStatement(sq)) {
-            ps.setInt(1, userID);
-            try (ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) {
-                    reservedProducts.add(new ReservedProduct(rs));
+        String sq1 = "SELECT * FROM RESERVED_PRODUCTS WHERE USER_ID = ?";
+        try (PreparedStatement ps1 = conn.prepareStatement(sq1)) {
+            ps1.setInt(1, userID);
+            try (ResultSet rs1 = ps1.executeQuery()) {
+                while (rs1.next()) {
+                    String sq2 = "SELECT * FROM PRODUCTS WHERE PRODUCT_ID = ?";
+                    try (PreparedStatement ps2 = conn.prepareStatement(sq2)) {
+                        ps2.setInt(1, rs1.getInt("PRODUCT_ID"));
+                        try (ResultSet rs2 = ps2.executeQuery()) {
+                            reservedProducts.add(new ReservedProduct(rs1, rs2));
+                        }
+                    }
                 }
                 if (reservedProducts.isEmpty()) throw new NoResultsFoundException("Reserved products not found");
             }
