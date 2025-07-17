@@ -441,14 +441,14 @@ public class GUI {
                 productPanel.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
                 resultPanel.add(productPanel);
             }
+
+            resultPanel.setBorder(BorderFactory.createEmptyBorder(1, 2, 1, 2));
         } catch (Exception ex) {
             resultPanel.setLayout(new GridLayout(0, 1));
             errorLabel.setText(ex.getMessage());
             resultPanel.add(errorLabel);
             resultPanel.setBorder(BorderFactory.createEmptyBorder(20, 10, 20, 10));
         }
-
-        resultPanel.setBorder(BorderFactory.createEmptyBorder(1, 2, 1, 2));
 
         resultPanel.revalidate();
         resultPanel.repaint();
@@ -634,12 +634,23 @@ public class GUI {
 
                 JButton returnButton = new JButton("RETURN");
                 returnButton.addActionListener(new ShowReturnDialog(rentalProduct, rentalProductPanel));
-            }
-        } catch (Exception e) {
-            //
-        }
 
-        rentalProductPanel.setBorder(BorderFactory.createEmptyBorder(1, 2, 1, 2));
+                productPanel.add(imgLabel);
+                productPanel.add(nameLabel);
+                productPanel.add(rentalDeadlineLabel);
+                productPanel.add(returnButton);
+
+                productPanel.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
+                rentalProductPanel.add(productPanel);
+            }
+
+            rentalProductPanel.setBorder(BorderFactory.createEmptyBorder(1, 2, 1, 2));
+        } catch (Exception ex) {
+            rentalProductPanel.setLayout(new GridLayout(0, 1));
+            JLabel errorLabel = new JLabel(ex.getMessage());
+            rentalProductPanel.add(errorLabel);
+            rentalProductPanel.setBorder(BorderFactory.createEmptyBorder(20, 10, 20, 10));
+        }
 
         rentalProductPanel.revalidate();
         rentalProductPanel.repaint();
@@ -648,7 +659,49 @@ public class GUI {
     public void showReservedProducts(JPanel reservedProductPanel) {
         reservedProductPanel.removeAll();
 
-        reservedProductPanel.setBorder(BorderFactory.createEmptyBorder(1, 2, 1, 2));
+        try {
+            ArrayList<ReservedProduct> reservedProducts = this.processor.getReservedProduct();
+            reservedProductPanel.setLayout(new BoxLayout(reservedProductPanel, BoxLayout.Y_AXIS));
+
+            for (ReservedProduct reservedProduct : reservedProducts) {
+                JPanel productPanel = new JPanel(new BoxLayout(productPanel, BoxLayout.X_AXIS));
+
+                ImageIcon imageIcon;
+                File imageFile = new File(reservedProduct.getImageURL());
+                if (imageFile.exists()) imageIcon = new ImageIcon(reservedProduct.getImageURL());
+                else imageIcon = new ImageIcon("images/no_image.png");
+                Image productImg = imageIcon.getImage();
+                JLabel imgLabel = new JLabel(new ImageIcon(productImg));
+                imgLabel.setHorizontalAlignment(SwingConstants.CENTER);
+                
+                JLabel nameLabel = new JLabel();
+                nameLabel.setText("<html><h1>" + reservedProduct.getProductName() + "</h1></html>");
+
+                JLabel earliestRentalStartLabel = new JLabel();
+                LocalDate earliestRentalStart = reservedProduct.getEarliestRentalStart();
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMM dd", Locale.ENGLISH);
+                String earliestRentalStartStr = earliestRentalStart.format(formatter);
+                earliestRentalStartLabel.setText(earliestRentalStartStr);
+
+                JButton returnButton = new JButton("RESERVE CANCEL");
+                returnButton.addActionListener(new ShowReserveCancelDialog(reservedProduct, reservedProductPanel));
+
+                productPanel.add(imgLabel);
+                productPanel.add(nameLabel);
+                productPanel.add(earliestRentalStartLabel);
+                productPanel.add(returnButton);
+
+                productPanel.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
+                reservedProductPanel.add(productPanel);
+            }
+
+            reservedProductPanel.setBorder(BorderFactory.createEmptyBorder(1, 2, 1, 2));
+        } catch (Exception ex) {
+            reservedProductPanel.setLayout(new GridLayout(0, 1));
+            JLabel errorLabel = new JLabel(ex.getMessage());
+            reservedProductPanel.add(errorLabel);
+            reservedProductPanel.setBorder(BorderFactory.createEmptyBorder(20, 10, 20, 10));
+        }
 
         reservedProductPanel.revalidate();
         reservedProductPanel.repaint();
