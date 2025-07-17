@@ -318,7 +318,6 @@ public class GUI {
         searchPanel.setLayout(new BoxLayout(searchPanel, BoxLayout.X_AXIS));
 
         JPanel resultPanel = new JPanel();
-        resultPanel.setBorder(BorderFactory.createEmptyBorder(1, 2, 1, 2));
 
         JLabel minPriceLabel = new JLabel("Min Price:");
         JTextField minPriceField = new JTextField();
@@ -449,6 +448,8 @@ public class GUI {
             resultPanel.setBorder(BorderFactory.createEmptyBorder(20, 10, 20, 10));
         }
 
+        resultPanel.setBorder(BorderFactory.createEmptyBorder(1, 2, 1, 2));
+
         resultPanel.revalidate();
         resultPanel.repaint();
     }
@@ -565,13 +566,37 @@ public class GUI {
 
         headerPanel.add(showProductsButton);
 
+        JPanel rentalProductPanel = new JPanel();
+        this.showRentalProducts(rentalProductPanel);
+        JScrollPane rentalScrollPanel = new JScrollPane(rentalProductPanel);
+        rentalScrollPanel.createVerticalScrollBar();
+        rentalScrollPanel.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+
+        JPanel reservedProductPanel = new JPanel();
+        this.showReservedProducts(reservedProductPanel);
+        JScrollPane reservedScrollPanel = new JScrollPane(reservedProductPanel);
+        reservedScrollPanel.createVerticalScrollBar();
+        reservedScrollPanel.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+
+        JPanel resultPanel = new JPanel();
+        resultPanel.setLayout(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(5, 5, 5, 5);
+
+        this.setGBCgrid(gbc, 0, 0, 1, 1);
+        resultPanel.add(rentalScrollPanel, gbc);
+
+        this.setGBCgrid(gbc, 1, 0, 1, 1);
+        resultPanel.add(reservedScrollPanel, gbc);
+
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
+        panel.add(headerPanel);
+        panel.add(resultPanel);
+
         panel.setBorder(BorderFactory.createEmptyBorder(3, 5, 3, 5));
         this.frame.getContentPane().add(panel, BorderLayout.CENTER);
-
-        frame.add(headerPanel);
 
         this.frame.revalidate();
         this.frame.repaint();
@@ -579,11 +604,73 @@ public class GUI {
         if (!this.frame.isVisible()) this.frame.setVisible(true);
     }
 
-    public void showReturnDialog() {
-        //
+    public void showRentalProducts(JPanel rentalProductPanel) {
+        rentalProductPanel.removeAll();
+
+        try {
+            ArrayList<RentalProduct> rentalProducts = this.processor.getRentalProducts();
+            rentalProductPanel.setLayout(new BoxLayout(rentalProductPanel, BoxLayout.Y_AXIS));
+
+            for (RentalProduct rentalProduct : rentalProducts) {
+                JPanel productPanel = new JPanel(new BoxLayout(productPanel, BoxLayout.X_AXIS));
+
+                ImageIcon imageIcon;
+                File imageFile = new File(rentalProduct.getImageURL());
+                if (imageFile.exists()) imageIcon = new ImageIcon(rentalProduct.getImageURL());
+                else imageIcon = new ImageIcon("images/no_image.png");
+                Image productImg = imageIcon.getImage();
+                JLabel imgLabel = new JLabel(new ImageIcon(productImg));
+                imgLabel.setHorizontalAlignment(SwingConstants.CENTER);
+                
+                JLabel nameLabel = new JLabel();
+                nameLabel.setText("<html><h1>" + rentalProduct.getProductName() + "</h1></html>");
+
+                JLabel rentalDeadlineLabel = new JLabel();
+                LocalDate rentalDeadline = rentalProduct.getRentalDeadLine();
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMM dd", Locale.ENGLISH);
+                String rentalDeadlineStr = rentalDeadline.format(formatter);
+                if (LocalDate.now().isAfter(rentalDeadline)) rentalDeadlineLabel.setText("<html><b><span style='color : red;'>" + rentalDeadlineStr + "</span></b></html>");
+                else rentalDeadlineLabel.setText(rentalDeadlineStr);
+
+                JButton returnButton = new JButton("RETURN");
+                returnButton.addActionListener(new ShowReturnDialog(rentalProduct, rentalProductPanel));
+            }
+        } catch (Exception e) {
+            //
+        }
+
+        rentalProductPanel.setBorder(BorderFactory.createEmptyBorder(1, 2, 1, 2));
+
+        rentalProductPanel.revalidate();
+        rentalProductPanel.repaint();
     }
 
-    public void returnProduct() {
+    public void showReservedProducts(JPanel reservedProductPanel) {
+        reservedProductPanel.removeAll();
+
+        reservedProductPanel.setBorder(BorderFactory.createEmptyBorder(1, 2, 1, 2));
+
+        reservedProductPanel.revalidate();
+        reservedProductPanel.repaint();
+    }
+
+    class ShowReturnDialog implements ActionListener {
+        RentalProduct rentalProduct;
+        JPanel rentalProductPanel;
+
+        public ShowReturnDialog(RentalProduct rentalProduct, JPanel rentalProductPanel) {
+            this.rentalProduct = rentalProduct;
+            this.rentalProductPanel = rentalProductPanel;
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            if (JOptionPane.showConfirmDialog(this.rentalProductPanel, "Confirm the Return?", "Return Confirmation", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION)
+                returnProduct(this.rentalProduct);
+        }
+    }
+
+    public void returnProduct(RentalProduct rentalProduct) {
         //
     }
 
