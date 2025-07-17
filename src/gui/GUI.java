@@ -639,19 +639,160 @@ public class GUI {
         if (!this.frame.isVisible()) this.frame.setVisible(true);
     }
 
-    public void showReturnDialog() {
-        //
+    class ShowReturnDialog implements ActionListener {
+        Product product;
+
+        public ShowReturnDialog(Product product) {
+            this.product = product;
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            JDialog returnDialog = new JDialog(frame, "Return Confirmation", true);
+            returnDialog.setLayout(new BorderLayout());
+            JPanel infoPanel = new JPanel();
+            infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
+
+            ImageIcon imageIcon;
+            File imageFile = new File(product.getImageURL());
+            if (imageFile.exists()) imageIcon = new ImageIcon(product.getImageURL());
+            else imageIcon = new ImageIcon("images/no_image.png");
+            Image productImg = imageIcon.getImage();
+            JLabel imgLabel = new JLabel(new ImageIcon(productImg));
+            imgLabel.setHorizontalAlignment(SwingConstants.CENTER);
+
+            JLabel nameLabel = new JLabel("<html><h1>" + product.getProductName() + "</h1></html>");
+
+            infoPanel.add(imgLabel);
+            infoPanel.add(nameLabel);
+
+            if (product.getRentalPeriod().isBefore(LocalDate.now())) {
+                JLabel overdueLabel = new JLabel("<html><span style='color: red;'>Overdue!</span></html>");
+                overdueLabel.setHorizontalAlignment(SwingConstants.RIGHT);
+                JLabel overdueFeeLabel = new JLabel("Overdue Fee: \u00A5" + product.getOverdueFee()); // Assuming getOverdueFee() method exists in Product class
+                infoPanel.add(overdueLabel);
+                infoPanel.add(overdueFeeLabel);
+            }
+            
+            JPanel buttonPanel = new JPanel();
+            JButton returnButton = new JButton("Return");
+            returnButton.addActionListener(new ReturnProduct(product));
+            JButton cancelButton = new JButton("Cancel");
+            cancelButton.addActionListener(e1 -> returnDialog.dispose());
+
+            buttonPanel.add(returnButton);
+            buttonPanel.add(cancelButton);
+
+            returnDialog.add(infoPanel, BorderLayout.CENTER);
+            returnDialog.add(buttonPanel, BorderLayout.SOUTH);
+            returnDialog.pack();
+            returnDialog.setVisible(true);
+        }
     }
 
-    public void returnProduct() {
-        //
+    class ReturnProduct implements ActionListener {
+        Product product;
+
+        public ReturnProduct(Product product) {
+            this.product = product;
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            try{
+                Boolean success = processor.executeReturn(product);
+                JDialog returnDialog;
+
+                if (success) {
+                    this.frame.getContentPane().removeAll();
+                    returnDialog = new JDialog(frame, "Return Success", true);
+                    returnDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+                    returnDialog.pack();
+                    returnDialog.setVisible(true);
+                }
+            } catch (Exception ex) {
+                JDialog errorDialog = new JDialog(frame, "Return Failed by Error", true);
+                JLabel errorLabel = new JLabel(ex.getMessage());
+                errorDialog.add(errorLabel);
+                errorDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+                errorDialog.pack();
+                errorDialog.setVisible(true);
+            } 
+        }
     }
 
-    public void showReserveCancelDialog() {
-        //
+    class showReserveCancelDialog implements ActionListener {
+        Product product;
+
+        public showReserveCancelDialog(Product product) {
+            this.product = product;
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            JDialog reserveCancelDialog = new JDialog(frame, "Reservation Cancel Confirmation", true);
+            reserveCancelDialog.setLayout(new BorderLayout());
+            JPanel infoPanel = new JPanel();
+            infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
+
+            ImageIcon imageIcon;
+            File imageFile = new File(product.getImageURL());
+            if (imageFile.exists()) imageIcon = new ImageIcon(product.getImageURL());
+            else imageIcon = new ImageIcon("images/no_image.png");
+            Image productImg = imageIcon.getImage();
+            JLabel imgLabel = new JLabel(new ImageIcon(productImg));
+            imgLabel.setHorizontalAlignment(SwingConstants.CENTER);
+
+            JLabel nameLabel = new JLabel("<html><h1>" + product.getProductName() + "</h1></html>");
+
+            infoPanel.add(imgLabel);
+            infoPanel.add(nameLabel);
+
+            JPanel buttonPanel = new JPanel();
+            JButton cancelButton = new JButton("Cancel Reservation");
+            cancelButton.addActionListener(new ReserveCancel(product));
+            JButton closeButton = new JButton("Close");
+            closeButton.addActionListener(e1 -> reserveCancelDialog.dispose());
+
+            buttonPanel.add(cancelButton);
+            buttonPanel.add(closeButton);
+
+            reserveCancelDialog.add(infoPanel, BorderLayout.CENTER);
+            reserveCancelDialog.add(buttonPanel, BorderLayout.SOUTH);
+            reserveCancelDialog.pack();
+            reserveCancelDialog.setVisible(true);
+        }
+        
     }
 
-    public void reserveCancel() {
-        //
+    class ReserveCancel implements ActionListener {
+        Product product;
+
+        public ReserveCancel(Product product) {
+            this.product = product;
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            try {
+                Boolean success = processor.executeReserveCancel(product);
+                JDialog cancelDialog;
+
+                if (success) {
+                    this.frame.getContentPane().removeAll();
+                    cancelDialog = new JDialog(frame, "Reservation Cancel Success", true);
+                    cancelDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+                    cancelDialog.pack();
+                    cancelDialog.setVisible(true);
+                }
+            } catch (Exception ex) {
+                JDialog errorDialog = new JDialog(frame, "Reservation Cancel Failed by Error", true);
+                JLabel errorLabel = new JLabel(ex.getMessage());
+                errorDialog.add(errorLabel);
+                errorDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+                errorDialog.pack();
+                errorDialog.setVisible(true);
+            }
+        }
     }
 }
