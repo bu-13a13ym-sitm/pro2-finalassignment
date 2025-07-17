@@ -658,134 +658,160 @@ public class GUI {
         if (!this.frame.isVisible()) this.frame.setVisible(true);
     }
 
-    public void showRentalProducts(JPanel rentalProductPanel) {
-        rentalProductPanel.removeAll();
-
-        try {
-            ArrayList<RentalProduct> rentalProducts = this.processor.getRentalProducts();
-            rentalProductPanel.setLayout(new BoxLayout(rentalProductPanel, BoxLayout.Y_AXIS));
-
-            for (RentalProduct rentalProduct : rentalProducts) {
-                JPanel productPanel = new JPanel(new BoxLayout(productPanel, BoxLayout.X_AXIS));
-
-                ImageIcon imageIcon;
-                File imageFile = new File(rentalProduct.getImageURL());
-                if (imageFile.exists()) imageIcon = new ImageIcon(rentalProduct.getImageURL());
-                else imageIcon = new ImageIcon("images/no_image.png");
-                Image productImg = imageIcon.getImage();
-                JLabel imgLabel = new JLabel(new ImageIcon(productImg));
-                imgLabel.setHorizontalAlignment(SwingConstants.CENTER);
-                
-                JLabel nameLabel = new JLabel();
-                nameLabel.setText("<html><h1>" + rentalProduct.getProductName() + "</h1></html>");
-
-                JLabel rentalDeadlineLabel = new JLabel();
-                LocalDate rentalDeadline = rentalProduct.getRentalDeadLine();
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMM dd", Locale.ENGLISH);
-                String rentalDeadlineStr = rentalDeadline.format(formatter);
-                if (LocalDate.now().isAfter(rentalDeadline)) rentalDeadlineLabel.setText("<html><b><span style='color : red;'>" + rentalDeadlineStr + "</span></b></html>");
-                else rentalDeadlineLabel.setText(rentalDeadlineStr);
-
-                JButton returnButton = new JButton("RETURN");
-                returnButton.addActionListener(new ShowReturnDialog(rentalProduct, rentalProductPanel));
-
-                productPanel.add(imgLabel);
-                productPanel.add(nameLabel);
-                productPanel.add(rentalDeadlineLabel);
-                productPanel.add(returnButton);
-
-                productPanel.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
-                rentalProductPanel.add(productPanel);
-            }
-
-            rentalProductPanel.setBorder(BorderFactory.createEmptyBorder(1, 2, 1, 2));
-        } catch (Exception ex) {
-            rentalProductPanel.setLayout(new GridLayout(0, 1));
-            JLabel errorLabel = new JLabel(ex.getMessage());
-            rentalProductPanel.add(errorLabel);
-            rentalProductPanel.setBorder(BorderFactory.createEmptyBorder(20, 10, 20, 10));
-        }
-
-        rentalProductPanel.revalidate();
-        rentalProductPanel.repaint();
-    }
-
-    public void showReservedProducts(JPanel reservedProductPanel) {
-        reservedProductPanel.removeAll();
-
-        try {
-            ArrayList<ReservedProduct> reservedProducts = this.processor.getReservedProduct();
-            reservedProductPanel.setLayout(new BoxLayout(reservedProductPanel, BoxLayout.Y_AXIS));
-
-            for (ReservedProduct reservedProduct : reservedProducts) {
-                JPanel productPanel = new JPanel(new BoxLayout(productPanel, BoxLayout.X_AXIS));
-
-                ImageIcon imageIcon;
-                File imageFile = new File(reservedProduct.getImageURL());
-                if (imageFile.exists()) imageIcon = new ImageIcon(reservedProduct.getImageURL());
-                else imageIcon = new ImageIcon("images/no_image.png");
-                Image productImg = imageIcon.getImage();
-                JLabel imgLabel = new JLabel(new ImageIcon(productImg));
-                imgLabel.setHorizontalAlignment(SwingConstants.CENTER);
-                
-                JLabel nameLabel = new JLabel();
-                nameLabel.setText("<html><h1>" + reservedProduct.getProductName() + "</h1></html>");
-
-                JLabel earliestRentalStartLabel = new JLabel();
-                LocalDate earliestRentalStart = reservedProduct.getEarliestRentalStart();
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMM dd", Locale.ENGLISH);
-                String earliestRentalStartStr = earliestRentalStart.format(formatter);
-                earliestRentalStartLabel.setText(earliestRentalStartStr);
-
-                JButton returnButton = new JButton("RESERVE CANCEL");
-                returnButton.addActionListener(new ShowReserveCancelDialog(reservedProduct, reservedProductPanel));
-
-                productPanel.add(imgLabel);
-                productPanel.add(nameLabel);
-                productPanel.add(earliestRentalStartLabel);
-                productPanel.add(returnButton);
-
-                productPanel.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
-                reservedProductPanel.add(productPanel);
-            }
-
-            reservedProductPanel.setBorder(BorderFactory.createEmptyBorder(1, 2, 1, 2));
-        } catch (Exception ex) {
-            reservedProductPanel.setLayout(new GridLayout(0, 1));
-            JLabel errorLabel = new JLabel(ex.getMessage());
-            reservedProductPanel.add(errorLabel);
-            reservedProductPanel.setBorder(BorderFactory.createEmptyBorder(20, 10, 20, 10));
-        }
-
-        reservedProductPanel.revalidate();
-        reservedProductPanel.repaint();
-    }
-
     class ShowReturnDialog implements ActionListener {
-        RentalProduct rentalProduct;
-        JPanel rentalProductPanel;
+        Product product;
 
-        public ShowReturnDialog(RentalProduct rentalProduct, JPanel rentalProductPanel) {
-            this.rentalProduct = rentalProduct;
-            this.rentalProductPanel = rentalProductPanel;
+        public ShowReturnDialog(Product product) {
+            this.product = product;
         }
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            if (JOptionPane.showConfirmDialog(this.rentalProductPanel, "Confirm the Return?", "Return Confirmation", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION)
-                returnProduct(this.rentalProduct);
+            JDialog returnDialog = new JDialog(frame, "Return Confirmation", true);
+            returnDialog.setLayout(new BorderLayout());
+            JPanel infoPanel = new JPanel();
+            infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
+
+            ImageIcon imageIcon;
+            File imageFile = new File(product.getImageURL());
+            if (imageFile.exists()) imageIcon = new ImageIcon(product.getImageURL());
+            else imageIcon = new ImageIcon("images/no_image.png");
+            Image productImg = imageIcon.getImage();
+            JLabel imgLabel = new JLabel(new ImageIcon(productImg));
+            imgLabel.setHorizontalAlignment(SwingConstants.CENTER);
+
+            JLabel nameLabel = new JLabel("<html><h1>" + product.getProductName() + "</h1></html>");
+
+            infoPanel.add(imgLabel);
+            infoPanel.add(nameLabel);
+
+            if (product.getRentalPeriod().isBefore(LocalDate.now())) {
+                JLabel overdueLabel = new JLabel("<html><span style='color: red;'>Overdue!</span></html>");
+                overdueLabel.setHorizontalAlignment(SwingConstants.RIGHT);
+                JLabel overdueFeeLabel = new JLabel("Overdue Fee: \u00A5" + product.getOverdueFee()); // Assuming getOverdueFee() method exists in Product class
+                infoPanel.add(overdueLabel);
+                infoPanel.add(overdueFeeLabel);
+            }
+            
+            JPanel buttonPanel = new JPanel();
+            JButton returnButton = new JButton("Return");
+            returnButton.addActionListener(new ReturnProduct(product));
+            JButton cancelButton = new JButton("Cancel");
+            cancelButton.addActionListener(e1 -> returnDialog.dispose());
+
+            buttonPanel.add(returnButton);
+            buttonPanel.add(cancelButton);
+
+            returnDialog.add(infoPanel, BorderLayout.CENTER);
+            returnDialog.add(buttonPanel, BorderLayout.SOUTH);
+            returnDialog.pack();
+            returnDialog.setVisible(true);
         }
     }
 
-    public void returnProduct(RentalProduct rentalProduct) {
-        //
+    class ReturnProduct implements ActionListener {
+        Product product;
+
+        public ReturnProduct(Product product) {
+            this.product = product;
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            try{
+                Boolean success = processor.executeReturn(product);
+                JDialog returnDialog;
+
+                if (success) {
+                    this.frame.getContentPane().removeAll();
+                    returnDialog = new JDialog(frame, "Return Success", true);
+                    returnDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+                    returnDialog.pack();
+                    returnDialog.setVisible(true);
+                }
+            } catch (Exception ex) {
+                JDialog errorDialog = new JDialog(frame, "Return Failed by Error", true);
+                JLabel errorLabel = new JLabel(ex.getMessage());
+                errorDialog.add(errorLabel);
+                errorDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+                errorDialog.pack();
+                errorDialog.setVisible(true);
+            } 
+        }
     }
 
-    public void showReserveCancelDialog() {
-        //
+    class showReserveCancelDialog implements ActionListener {
+        Product product;
+
+        public showReserveCancelDialog(Product product) {
+            this.product = product;
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            JDialog reserveCancelDialog = new JDialog(frame, "Reservation Cancel Confirmation", true);
+            reserveCancelDialog.setLayout(new BorderLayout());
+            JPanel infoPanel = new JPanel();
+            infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
+
+            ImageIcon imageIcon;
+            File imageFile = new File(product.getImageURL());
+            if (imageFile.exists()) imageIcon = new ImageIcon(product.getImageURL());
+            else imageIcon = new ImageIcon("images/no_image.png");
+            Image productImg = imageIcon.getImage();
+            JLabel imgLabel = new JLabel(new ImageIcon(productImg));
+            imgLabel.setHorizontalAlignment(SwingConstants.CENTER);
+
+            JLabel nameLabel = new JLabel("<html><h1>" + product.getProductName() + "</h1></html>");
+
+            infoPanel.add(imgLabel);
+            infoPanel.add(nameLabel);
+
+            JPanel buttonPanel = new JPanel();
+            JButton cancelButton = new JButton("Cancel Reservation");
+            cancelButton.addActionListener(new ReserveCancel(product));
+            JButton closeButton = new JButton("Close");
+            closeButton.addActionListener(e1 -> reserveCancelDialog.dispose());
+
+            buttonPanel.add(cancelButton);
+            buttonPanel.add(closeButton);
+
+            reserveCancelDialog.add(infoPanel, BorderLayout.CENTER);
+            reserveCancelDialog.add(buttonPanel, BorderLayout.SOUTH);
+            reserveCancelDialog.pack();
+            reserveCancelDialog.setVisible(true);
+        }
+        
     }
 
-    public void reserveCancel() {
-        //
+    class ReserveCancel implements ActionListener {
+        Product product;
+
+        public ReserveCancel(Product product) {
+            this.product = product;
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            try {
+                Boolean success = processor.executeReserveCancel(product);
+                JDialog cancelDialog;
+
+                if (success) {
+                    this.frame.getContentPane().removeAll();
+                    cancelDialog = new JDialog(frame, "Reservation Cancel Success", true);
+                    cancelDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+                    cancelDialog.pack();
+                    cancelDialog.setVisible(true);
+                }
+            } catch (Exception ex) {
+                JDialog errorDialog = new JDialog(frame, "Reservation Cancel Failed by Error", true);
+                JLabel errorLabel = new JLabel(ex.getMessage());
+                errorDialog.add(errorLabel);
+                errorDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+                errorDialog.pack();
+                errorDialog.setVisible(true);
+            }
+        }
     }
 }
