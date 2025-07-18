@@ -287,7 +287,7 @@ public class GUI {
             try {
                 if (processor.newCustomer(userNameStr, emailStr, passwordStr)) {
                     JOptionPane.showMessageDialog(frame, "Register completed.", "Register Completed", JOptionPane.INFORMATION_MESSAGE);
-                    showProductPage();
+                    showLoginPage();
                 }
             } catch (EmptyInputException | EmailPatternException| AlreadyRegisteredException | DatabaseErrorException ex) {
                 this.errorLabel.setText(ex.getMessage());
@@ -424,7 +424,7 @@ public class GUI {
 
                 JLabel immLabel = new JLabel();
                 immLabel.setHorizontalAlignment(SwingConstants.RIGHT);
-                if (product.getCurrentStock() > 0) {
+                if (product.getCurrentStock() == 0) {
                     LocalDate earliestRentalStart = product.getEarliestRentalStart();
                     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMM dd", Locale.ENGLISH);
                     immLabel.setText("Earliest Available Date: " + earliestRentalStart.format(formatter));
