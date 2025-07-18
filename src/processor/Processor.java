@@ -126,6 +126,7 @@ public class Processor {
         } catch (NoResultsFoundException e) {
             throw new NoProductFoundException("The product is not found in the stock.", e);
         } catch (RentalFailedException | DatabaseException e) {
+            e.printStackTrace();
             throw new DatabaseErrorException("Failed to rental the product due to database error.", e);
         }
     }
