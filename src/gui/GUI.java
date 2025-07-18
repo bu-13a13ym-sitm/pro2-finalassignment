@@ -215,10 +215,12 @@ public class GUI {
         currRow++;
 
         this.setGBCgrid(gbc, 0, currRow, 4, 1);
+        gbc.anchor = GridBagConstraints.WEST;
         panel.add(userNameLabel, gbc);
         currRow++;
 
         this.setGBCgrid(gbc, 0, currRow, 4, 2);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
         panel.add(userNameField, gbc);
         currRow += 2;
 
@@ -227,6 +229,7 @@ public class GUI {
         currRow++;
 
         this.setGBCgrid(gbc, 0, currRow, 4, 2);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
         panel.add(emailField, gbc);
         currRow += 2;
 
@@ -235,6 +238,7 @@ public class GUI {
         currRow++;
 
         this.setGBCgrid(gbc, 0, currRow, 4, 2);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
         panel.add(passwordField, gbc);
         currRow += 2;
 
@@ -242,6 +246,7 @@ public class GUI {
         panel.add(passwordLabel2, gbc);
         currRow++;
         this.setGBCgrid(gbc, 0, currRow, 4, 2);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
         panel.add(passwordField2, gbc);
         currRow += 2;
 
@@ -481,13 +486,13 @@ public class GUI {
         else imageIcon = new ImageIcon("images/no_image.png");
         Image productImg = imageIcon.getImage();
         JLabel imgLabel = new JLabel(new ImageIcon(productImg));
-        imgLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        imgLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         JPanel infoPanel = new JPanel();
         infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
 
         JPanel headerPanel = new JPanel();
-        headerPanel.setLayout(new BorderLayout());
+        headerPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
 
         JLabel nameLabel = new JLabel("<html><h1>" + product.getProductName() + "</h1></html>");
         JLabel rentalFeeLabel = new JLabel("\u00A5" + product.getRentalFee());
