@@ -89,6 +89,7 @@ public class SQL {
                 return products;
             }
         } catch (SQLException e) {
+            System.out.println(e.getMessage());
             throw new DatabaseException("Database exception occurred.", e);
         }
     }
