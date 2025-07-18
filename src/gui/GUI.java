@@ -685,17 +685,17 @@ public class GUI {
             infoPanel.add(imgLabel);
             infoPanel.add(nameLabel);
 
-            if (product.getRentalPeriod().isBefore(LocalDate.now())) {
+            if (product.getRentalDeadLine().isBefore(LocalDate.now())) {
                 JLabel overdueLabel = new JLabel("<html><span style='color: red;'>Overdue!</span></html>");
                 overdueLabel.setHorizontalAlignment(SwingConstants.RIGHT);
-                JLabel overdueFeeLabel = new JLabel("Overdue Fee: \u00A5" + product.getOverdueFee()); // Assuming getOverdueFee() method exists in Product class
+                JLabel overdueFeeLabel = new JLabel("Overdue Fee: \u00A5" + (product.getRentalFee() / 2)); 
                 infoPanel.add(overdueLabel);
                 infoPanel.add(overdueFeeLabel);
             }
             
             JPanel buttonPanel = new JPanel();
             JButton returnButton = new JButton("Return");
-            returnButton.addActionListener(new ReturnProduct(product));
+            returnButton.addActionListener(new ReturnProduct(product, returnDialog));
             JButton cancelButton = new JButton("Cancel");
             cancelButton.addActionListener(e1 -> returnDialog.dispose());
 
@@ -711,9 +711,11 @@ public class GUI {
 
     class ReturnProduct implements ActionListener {
         Product product;
+        JDialog parentDialog;
 
-        public ReturnProduct(Product product) {
+        public ReturnProduct(Product product, JDialog parentDialog) {
             this.product = product;
+            this.parentDialog = parentDialog;
         }
 
         @Override
@@ -723,14 +725,14 @@ public class GUI {
                 JDialog returnDialog;
 
                 if (success) {
-                    this.frame.getContentPane().removeAll();
-                    returnDialog = new JDialog(frame, "Return Success", true);
+                    returnDialog = new JDialog(parentDialog, "Return Success", true);
                     returnDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
                     returnDialog.pack();
                     returnDialog.setVisible(true);
+                    showRentalStatePage();
                 }
             } catch (Exception ex) {
-                JDialog errorDialog = new JDialog(frame, "Return Failed by Error", true);
+                JDialog errorDialog = new JDialog(parentDialog, "Return Failed by Error", true);
                 JLabel errorLabel = new JLabel(ex.getMessage());
                 errorDialog.add(errorLabel);
                 errorDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
@@ -769,7 +771,7 @@ public class GUI {
 
             JPanel buttonPanel = new JPanel();
             JButton cancelButton = new JButton("Cancel Reservation");
-            cancelButton.addActionListener(new ReserveCancel(product));
+            cancelButton.addActionListener(new ReserveCancel(product, reserveCancelDialog));
             JButton closeButton = new JButton("Close");
             closeButton.addActionListener(e1 -> reserveCancelDialog.dispose());
 
@@ -786,9 +788,11 @@ public class GUI {
 
     class ReserveCancel implements ActionListener {
         Product product;
+        JDialog parentDialog;
 
-        public ReserveCancel(Product product) {
+        public ReserveCancel(Product product, JDialog parentDialog) {
             this.product = product;
+            this.parentDialog = parentDialog;
         }
 
         @Override
@@ -798,14 +802,14 @@ public class GUI {
                 JDialog cancelDialog;
 
                 if (success) {
-                    this.frame.getContentPane().removeAll();
-                    cancelDialog = new JDialog(frame, "Reservation Cancel Success", true);
+                    cancelDialog = new JDialog(parentDialog, "Reservation Cancel Success", true);
                     cancelDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
                     cancelDialog.pack();
                     cancelDialog.setVisible(true);
+                    showRentalStatePage();
                 }
             } catch (Exception ex) {
-                JDialog errorDialog = new JDialog(frame, "Reservation Cancel Failed by Error", true);
+                JDialog errorDialog = new JDialog(parentDialog, "Reservation Cancel Failed by Error", true);
                 JLabel errorLabel = new JLabel(ex.getMessage());
                 errorDialog.add(errorLabel);
                 errorDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
