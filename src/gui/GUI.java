@@ -471,7 +471,7 @@ public class GUI {
 
     private void showProductDetail(Product product) {
         JDialog detailDialog = new JDialog(this.frame, "Product Detail", true);
-        detailDialog.setLayout(new BoxLayout(detailDialog, BoxLayout.Y_AXIS));
+        detailDialog.getContentPane().setLayout(new BoxLayout(detailDialog.getContentPane(), BoxLayout.Y_AXIS));
 
         ImageIcon imageIcon;
         File imageFile = new File(product.getImageURL());
@@ -495,9 +495,10 @@ public class GUI {
         headerPanel.add(rentalFeeLabel, BorderLayout.EAST);
         headerPanel.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
 
-        JPanel detailPanel = new JPanel(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
+        JPanel detailPanel = new JPanel();
+        detailPanel.setLayout(new BoxLayout(detailPanel, BoxLayout.Y_AXIS));
 
-        JTextArea descriptionArea = new JTextArea(product.getDescription().replace(".", ".\n"));
+        JTextArea descriptionArea = new JTextArea(product.getDescription().replace(".", ".\n").replace(".\n ", ".\n"));
         descriptionArea.setEditable(false);
 
         detailPanel.add(descriptionArea);
@@ -534,9 +535,9 @@ public class GUI {
 
         btnPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
-        detailDialog.add(imgLabel);
-        detailDialog.add(infoPanel);
-        detailDialog.add(btnPanel);
+        detailDialog.getContentPane().add(imgLabel);
+        detailDialog.getContentPane().add(infoPanel);
+        detailDialog.getContentPane().add(btnPanel);
 
         detailDialog.pack();
         detailDialog.setLocationRelativeTo(frame);
