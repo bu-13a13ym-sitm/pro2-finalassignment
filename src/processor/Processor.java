@@ -34,7 +34,7 @@ public class Processor {
             emptyExceptionMessage.append("Email is empty.");
         }
         if(emptyFlag){
-            throw new EmptyInputException(emptyExceptionMessage.toString())
+            throw new EmptyInputException(emptyExceptionMessage.toString());
         }
         if(!VALID_EMAIL_PATTERN.matcher(email).find()){
             throw new EmailPatternException("Invalid email.");
@@ -133,9 +133,9 @@ public class Processor {
         }
     }
 
-    public ArrayList<RentalProduct> getRentalProducts(int userID) throws NoProductFoundException, DatabaseErrorException{
+    public ArrayList<RentalProduct> getRentalProducts() throws NoProductFoundException, DatabaseErrorException{
         try {
-            return sql.getRentalProducts(userID);
+            return sql.getRentalProducts(this.currentUser.getUserID());
         } catch (NoResultsFoundException e) {
             throw new NoProductFoundException("No rental product is found.", e);
         } catch (DatabaseException e) {
@@ -143,9 +143,9 @@ public class Processor {
         }
     }
 
-    public ArrayList<ReservedProduct> getReservedProduct(int userID) throws NoProductFoundException, DatabaseErrorException{
+    public ArrayList<ReservedProduct> getReservedProduct() throws NoProductFoundException, DatabaseErrorException{
         try {
-            return sql.getReservedProducts(userID);
+            return sql.getReservedProducts(this.currentUser.getUserID());
         } catch (NoResultsFoundException e) {
             throw new NoProductFoundException("No reserved product is found.", e);
         } catch (DatabaseException e) {

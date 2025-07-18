@@ -10,10 +10,7 @@ import java.util.Locale;
 
 import processor.*;
 import processor.exceptions.*;
-import sql.*;
-import sql.account.*;
 import sql.product.*;
-import sql.exception.*;
 
 public class GUI {
     public JFrame frame;
@@ -22,7 +19,7 @@ public class GUI {
     public GUI () {
         try {
             this.processor = new Processor();
-        } catch (ConnectionFailedException e) {
+        } catch (DatabaseErrorException ex) {
             JOptionPane.showMessageDialog(null, "Failed to start", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
@@ -39,9 +36,13 @@ public class GUI {
         this.frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         this.frame.addWindowListener(new WindowAdapter() {
             @Override
-            public void windowClosing(WindowEvent e) {
+            public void windowClosing(WindowEvent ev) {
                 logout();
-                processor.disconnect();
+                try {
+                    processor.disconnect();
+                } catch (DatabaseErrorException ex) {
+                    //
+                }
                 frame.dispose();
             }
         });
@@ -141,7 +142,7 @@ public class GUI {
             String passwordStr = new String(this.passwordField.getPassword()).trim();
             try {
                 if (processor.loginCheck(emailStr, passwordStr)) showProductPage();
-            } catch (Exception ex) {
+            } catch (EmptyInputException | EmailPatternException | IncorrectInputException | NoAccountException | DatabaseErrorException ex) {
                 this.errorLabel.setText(ex.getMessage());
             }
         }
@@ -288,7 +289,7 @@ public class GUI {
                     JOptionPane.showMessageDialog(frame, "Register completed.", "Register Completed", JOptionPane.INFORMATION_MESSAGE);
                     showProductPage();
                 }
-            } catch (Exception ex) {
+            } catch (EmptyInputException | EmailPatternException| AlreadyRegisteredException | DatabaseErrorException ex) {
                 this.errorLabel.setText(ex.getMessage());
             }
         }
@@ -444,7 +445,7 @@ public class GUI {
             }
 
             resultPanel.setBorder(BorderFactory.createEmptyBorder(1, 2, 1, 2));
-        } catch (Exception ex) {
+        } catch (EmptyInputException | NoProductFoundException | DatabaseErrorException ex) {
             resultPanel.setLayout(new GridLayout(0, 1));
             errorLabel.setText(ex.getMessage());
             resultPanel.add(errorLabel);
@@ -565,8 +566,8 @@ public class GUI {
                         rentalDialog.setVisible(true);
                     }
 
-                } catch (Exception ex) {
-                    JDialog errorDialog = new JDialog(frame, "Rental Failed by Error", true);
+                } catch (NotYetLoginException | NoProductFoundException | DatabaseErrorException ex) {
+                    JDialog errorDialog = new JDialog(frame, "Rental Failed due to an Error", true);
                     JLabel errorLabel = new JLabel(ex.getMessage());
                     errorDialog.add(errorLabel);
                     errorDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
@@ -598,8 +599,8 @@ public class GUI {
                     reserveDialog.setVisible(true);
                 }
 
-            } catch (Exception ex) {
-                JDialog errorDialog = new JDialog(frame, "Reservation Failed by Error", true);
+            } catch (NotYetLoginException | NoProductFoundException | DatabaseErrorException ex) {
+                JDialog errorDialog = new JDialog(frame, "Reservation Failed due to an Error", true);
                 JLabel errorLabel = new JLabel(ex.getMessage());
                 errorDialog.add(errorLabel);
                 errorDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
@@ -672,7 +673,8 @@ public class GUI {
             rentalProductPanel.setLayout(new BoxLayout(rentalProductPanel, BoxLayout.Y_AXIS));
 
             for (RentalProduct rentalProduct : rentalProducts) {
-                JPanel productPanel = new JPanel(new BoxLayout(productPanel, BoxLayout.X_AXIS));
+                JPanel productPanel = new JPanel();
+                productPanel.setLayout(new BoxLayout(productPanel, BoxLayout.X_AXIS));
 
                 ImageIcon imageIcon;
                 File imageFile = new File(rentalProduct.getImageURL());
@@ -705,7 +707,7 @@ public class GUI {
             }
 
             rentalProductPanel.setBorder(BorderFactory.createEmptyBorder(1, 2, 1, 2));
-        } catch (Exception ex) {
+        } catch (NoProductFoundException | DatabaseErrorException ex) {
             rentalProductPanel.setLayout(new GridLayout(0, 1));
             JLabel errorLabel = new JLabel(ex.getMessage());
             rentalProductPanel.add(errorLabel);
@@ -724,7 +726,8 @@ public class GUI {
             reservedProductPanel.setLayout(new BoxLayout(reservedProductPanel, BoxLayout.Y_AXIS));
 
             for (ReservedProduct reservedProduct : reservedProducts) {
-                JPanel productPanel = new JPanel(new BoxLayout(productPanel, BoxLayout.X_AXIS));
+                JPanel productPanel = new JPanel();
+                productPanel.setLayout(new BoxLayout(productPanel, BoxLayout.X_AXIS));
 
                 ImageIcon imageIcon;
                 File imageFile = new File(reservedProduct.getImageURL());
@@ -756,7 +759,7 @@ public class GUI {
             }
 
             reservedProductPanel.setBorder(BorderFactory.createEmptyBorder(1, 2, 1, 2));
-        } catch (Exception ex) {
+        } catch (NoProductFoundException | DatabaseErrorException ex) {
             reservedProductPanel.setLayout(new GridLayout(0, 1));
             JLabel errorLabel = new JLabel(ex.getMessage());
             reservedProductPanel.add(errorLabel);
@@ -799,7 +802,7 @@ public class GUI {
             if (rentalProduct.getRentalDeadLine().isBefore(LocalDate.now())) {
                 JLabel overdueLabel = new JLabel("<html><span style='color: red;'>Overdue!</span></html>");
                 overdueLabel.setHorizontalAlignment(SwingConstants.RIGHT);
-                JLabel overdueFeeLabel = new JLabel("Overdue Fee: \u00A5" + (this.rentalProduct.getRentalFee() / 2)); // Assuming getOverdueFee() method exists in Product class
+                JLabel overdueFeeLabel = new JLabel("Overdue Fee: \u00A5" + (this.rentalProduct.getRentalFee() / 2));
                 infoPanel.add(overdueLabel);
                 infoPanel.add(overdueFeeLabel);
             }
@@ -838,7 +841,7 @@ public class GUI {
                     returnCompleteDialog.pack();
                     returnCompleteDialog.setVisible(true);
                 }
-            } catch (Exception ex) {
+            } catch (NotYetLoginException | NoProductFoundException | DatabaseErrorException ex) {
                 JDialog errorDialog = new JDialog(frame, "Return Failed by Error", true);
                 JLabel errorLabel = new JLabel(ex.getMessage());
                 errorDialog.add(errorLabel);
@@ -913,7 +916,7 @@ public class GUI {
                     cancelCompleteDialog.pack();
                     cancelCompleteDialog.setVisible(true);
                 }
-            } catch (Exception ex) {
+            } catch (NotYetLoginException | NoProductFoundException | DatabaseErrorException ex) {
                 JDialog errorDialog = new JDialog(frame, "Reservation Cancel Failed by Error", true);
                 JLabel errorLabel = new JLabel(ex.getMessage());
                 errorDialog.add(errorLabel);
