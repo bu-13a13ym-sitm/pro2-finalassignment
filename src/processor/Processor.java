@@ -22,12 +22,19 @@ public class Processor {
         }
     }
 
-    public boolean loginCheck(String email, String password) throws EmptyInputException, EmailPatternException, IncorrectInputException, NoAccountException, DatabaseErrorException {
+    public boolean loginCheck(String email, String password) throws EmptyInputException, EmailPatternException, IncorrectInputException, NoAccountException, DatabaseErrorException{
+        boolean emptyFlag = false;
+        StringBuilder emptyExceptionMessage = new StringBuilder();
         if(email == null || email.trim().isEmpty()){
-            throw new EmptyInputException("Email is empty.");
+            emptyFlag = true;
+            emptyExceptionMessage.append("Email is empty.");
         }
         if(password == null || password.trim().isEmpty()){
-            throw new EmptyInputException("Password is empty.");
+            emptyFlag = true;
+            emptyExceptionMessage.append("Email is empty.");
+        }
+        if(emptyFlag){
+            throw new EmptyInputException(emptyExceptionMessage.toString())
         }
         if(!VALID_EMAIL_PATTERN.matcher(email).find()){
             throw new EmailPatternException("Invalid email.");
