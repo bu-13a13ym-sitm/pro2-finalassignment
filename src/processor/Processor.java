@@ -1,12 +1,11 @@
 package processor;
 import java.util.ArrayList;
 import java.util.regex.Pattern;
-
 import processor.exceptions.*;
 import sql.*;
 import sql.account.*;
-import sql.product.*;
 import sql.exception.*;
+import sql.product.*;
 
 public class Processor {
     private SQL sql;
@@ -30,6 +29,7 @@ public class Processor {
             emptyExceptionMessage.append("Email is empty.");
         }
         if(password == null || password.trim().isEmpty()){
+            if(emptyFlag) emptyExceptionMessage.append(" ");
             emptyFlag = true;
             emptyExceptionMessage.append("Email is empty.");
         }
@@ -67,14 +67,24 @@ public class Processor {
     }
 
     public boolean newCustomer(String userName, String email, String password) throws EmptyInputException, EmailPatternException,  AlreadyRegisteredException, DatabaseErrorException{
+        boolean emptyFlag = false;
+        StringBuilder emptyExceptionMessage = new StringBuilder();
         if(userName == null || userName.trim().isEmpty()){
-            throw new EmptyInputException("UserName is empty.");
+            emptyFlag = true;
+            emptyExceptionMessage.append("UserName is empty.");
         }
         if(email == null || email.trim().isEmpty()){
-            throw new EmptyInputException("Email is empty.");
+            if(emptyFlag) emptyExceptionMessage.append(" ");
+            emptyFlag = true;
+            emptyExceptionMessage.append("Email is empty.");
         }
         if(password == null || password.trim().isEmpty()){
-            throw new EmptyInputException("Password is empty");
+            if(emptyFlag) emptyExceptionMessage.append(" ");
+            emptyFlag = true;
+            emptyExceptionMessage.append("Password is empty.");
+        }
+        if(emptyFlag){
+            throw new EmptyInputException(emptyExceptionMessage.toString());
         }
         if(!VALID_EMAIL_PATTERN.matcher(email).find()){
             throw new EmailPatternException("Invalid email.");
