@@ -45,7 +45,7 @@ public class Processor {
                 this.currentUser = account;
                 return true;
             }else{
-                throw new IncorrectInputException("Incorrect password.");
+                throw new IncorrectInputException("Email address or password is incorrect.");
             }
         } catch (NoResultsFoundException e) {
             throw new NoAccountException("Email address or password is incorrect.", e);
