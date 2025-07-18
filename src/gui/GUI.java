@@ -287,7 +287,7 @@ public class GUI {
             try {
                 if (processor.newCustomer(userNameStr, emailStr, passwordStr)) {
                     JOptionPane.showMessageDialog(frame, "Register completed.", "Register Completed", JOptionPane.INFORMATION_MESSAGE);
-                    showProductPage();
+                    showLoginPage();
                 }
             } catch (EmptyInputException | EmailPatternException| AlreadyRegisteredException | DatabaseErrorException ex) {
                 this.errorLabel.setText(ex.getMessage());
