@@ -100,6 +100,7 @@ public class GUI {
         currRow++;
 
         this.setGBCgrid(gbc, 0, currRow, 4, 2);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
         panel.add(emailField, gbc);
         currRow += 2;
 
@@ -108,6 +109,7 @@ public class GUI {
         currRow++;
 
         this.setGBCgrid(gbc, 0, currRow, 4, 2);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
         panel.add(passwordField, gbc);
         currRow += 2;
 
