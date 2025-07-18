@@ -13,7 +13,7 @@ public class RegisterProduct {
         String path = "src/scraping/productList.csv";
         try {
             SQL sql = new SQL();
-            List<String> lines = Files.readAllLines(Paths.get("images/" + path));
+            List<String> lines = Files.readAllLines(Paths.get(path));
             for (int i = 1; i < lines.size(); i++) {
                 String line = lines.get(i);
                 String[] fields = line.split(",");
@@ -24,9 +24,9 @@ public class RegisterProduct {
                 int currentStock = totalStock;
                 int numReservation = 0;
                 int rentalFee = Integer.parseInt(fields[3].trim());
-                String imageURL = fields[4].trim();
+                String imageURL = "images/" + fields[4].trim();
                 int rentalPeriod = Integer.parseInt(fields[5].trim());
-                LocalDate earliestRentalStart = null;
+                LocalDate earliestRentalStart = LocalDate.now();
 
                 Product product = new Product(productID, productName, description, totalStock, currentStock, numReservation, rentalFee, imageURL, rentalPeriod, earliestRentalStart);
                 try {
