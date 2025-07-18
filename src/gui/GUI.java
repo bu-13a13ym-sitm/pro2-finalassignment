@@ -424,7 +424,7 @@ public class GUI {
 
                 JLabel immLabel = new JLabel();
                 immLabel.setHorizontalAlignment(SwingConstants.RIGHT);
-                if (product.getCurrentStock() > 0) {
+                if (product.getCurrentStock() == 0) {
                     LocalDate earliestRentalStart = product.getEarliestRentalStart();
                     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMM dd", Locale.ENGLISH);
                     immLabel.setText("Earliest Available Date: " + earliestRentalStart.format(formatter));

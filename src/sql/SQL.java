@@ -311,7 +311,7 @@ public class SQL {
 
                 try (ResultSet rs3 = ps3.executeQuery()) {
                     if (rs3.next()) {
-                        if (rs3.getInt("CURRENT_STOCK") == 1) {
+                        if (rs3.getInt("CURRENT_STOCK") == 1 && rs3.getInt("NUM_RESERVATION") > 0) {
                             Integer newRentalUserID = null;
                             String sq4 = "SELECT * FROM RESERVED_PRODUCTS WHERE PRODUCT_ID = ? ORDER BY RESERVED_PRODUCT_ID";
                             try (PreparedStatement ps4 = conn.prepareStatement(sq4)) {
