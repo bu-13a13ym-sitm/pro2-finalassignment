@@ -72,8 +72,8 @@ public class SQL {
     public ArrayList<Product> productQuery(Integer minPrice, Integer maxPrice, Boolean immediate) throws NoResultsFoundException, DatabaseException {
         ArrayList<Product> products = new ArrayList<>();
         StringBuilder sq = new StringBuilder("SELECT * FROM PRODUCTS WHERE 1 = 1");
-        if (minPrice != null && minPrice > 0) sq.append(" AND PRICE >= ?");
-        if (maxPrice != null && maxPrice > 0) sq.append(" AND PRICE <= ?");
+        if (minPrice != null && minPrice > 0) sq.append(" AND RENTAL_FEE >= ?");
+        if (maxPrice != null && maxPrice > 0) sq.append(" AND RENTAL_FEE <= ?");
         if (immediate != null && immediate == true) sq.append(" AND EARLIEST_RENTAL_START = ?");
         try (PreparedStatement ps = conn.prepareStatement(sq.toString())) {
             int paramInd = 1;
