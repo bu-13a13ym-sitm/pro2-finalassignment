@@ -100,6 +100,7 @@ public class GUI {
         currRow++;
 
         this.setGBCgrid(gbc, 0, currRow, 4, 2);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
         panel.add(emailField, gbc);
         currRow += 2;
 
@@ -108,6 +109,7 @@ public class GUI {
         currRow++;
 
         this.setGBCgrid(gbc, 0, currRow, 4, 2);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
         panel.add(passwordField, gbc);
         currRow += 2;
 
@@ -562,6 +564,10 @@ public class GUI {
 
                     if (success) {
                         rentalDialog = new JDialog(frame, "Rental Success", true);
+                        JLabel successLabel = new JLabel("Rental has been successfully completed.");
+                        successLabel.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+                        rentalDialog.add(successLabel, BorderLayout.CENTER);
+                        rentalDialog.setLocationRelativeTo(frame);
                         rentalDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
                         rentalDialog.pack();
                         rentalDialog.setVisible(true);
@@ -570,7 +576,9 @@ public class GUI {
                 } catch (NotYetLoginException | NoProductFoundException | DatabaseErrorException ex) {
                     JDialog errorDialog = new JDialog(frame, "Rental Failed due to an Error", true);
                     JLabel errorLabel = new JLabel(ex.getMessage());
-                    errorDialog.add(errorLabel);
+                    errorLabel.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+                    errorDialog.add(errorLabel, BorderLayout.CENTER);
+                    errorDialog.setLocationRelativeTo(frame);
                     errorDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
                     errorDialog.pack();
                     errorDialog.setVisible(true);
@@ -595,6 +603,10 @@ public class GUI {
 
                 if (success) {
                     reserveDialog = new JDialog(frame, "Reservation Success", true);
+                    JLabel successLabel = new JLabel("Reservation has been successfully completed.");
+                    successLabel.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+                    reserveDialog.add(successLabel, BorderLayout.CENTER);
+                    reserveDialog.setLocationRelativeTo(frame);
                     reserveDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
                     reserveDialog.pack();
                     reserveDialog.setVisible(true);
@@ -603,7 +615,9 @@ public class GUI {
             } catch (NotYetLoginException | NoProductFoundException | DatabaseErrorException ex) {
                 JDialog errorDialog = new JDialog(frame, "Reservation Failed due to an Error", true);
                 JLabel errorLabel = new JLabel(ex.getMessage());
-                errorDialog.add(errorLabel);
+                errorLabel.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+                errorDialog.add(errorLabel, BorderLayout.CENTER);
+                errorDialog.setLocationRelativeTo(frame);
                 errorDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
                 errorDialog.pack();
                 errorDialog.setVisible(true);
@@ -799,11 +813,15 @@ public class GUI {
             infoPanel.add(nameLabel);
 
             if (rentalProduct.getRentalDeadLine().isBefore(LocalDate.now())) {
+                JPanel overduePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
                 JLabel overdueLabel = new JLabel("<html><span style='color: red;'>Overdue!</span></html>");
                 overdueLabel.setHorizontalAlignment(SwingConstants.RIGHT);
                 JLabel overdueFeeLabel = new JLabel("Overdue Fee: \u00A5" + (this.rentalProduct.getRentalFee() / 2));
-                infoPanel.add(overdueLabel);
-                infoPanel.add(overdueFeeLabel);
+
+                overduePanel.add(overdueLabel);
+                overduePanel.add(overdueFeeLabel);
+
+                infoPanel.add(overduePanel);
             }
             
             JPanel buttonPanel = new JPanel();
@@ -836,6 +854,10 @@ public class GUI {
             try{
                 if (processor.executeReturn(this.rentalProduct)) {
                     JDialog returnCompleteDialog = new JDialog(this.returnDialog, "Return Success", true);
+                    JLabel successLabel = new JLabel("Return has been successfully completed.");
+                    successLabel.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+                    returnCompleteDialog.add(successLabel, BorderLayout.CENTER);
+                    returnCompleteDialog.setLocationRelativeTo(frame);
                     returnCompleteDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
                     returnCompleteDialog.pack();
                     returnCompleteDialog.setVisible(true);
@@ -843,7 +865,9 @@ public class GUI {
             } catch (NotYetLoginException | NoProductFoundException | DatabaseErrorException ex) {
                 JDialog errorDialog = new JDialog(frame, "Return Failed by Error", true);
                 JLabel errorLabel = new JLabel(ex.getMessage());
-                errorDialog.add(errorLabel);
+                errorLabel.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+                errorDialog.add(errorLabel, BorderLayout.CENTER);
+                errorDialog.setLocationRelativeTo(frame);
                 errorDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
                 errorDialog.pack();
                 errorDialog.setVisible(true);
@@ -874,6 +898,7 @@ public class GUI {
             imgLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
             JLabel nameLabel = new JLabel("<html><h1>" + this.reservedProduct.getProductName() + "</h1></html>");
+            nameLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
             infoPanel.add(imgLabel);
             infoPanel.add(nameLabel);
@@ -909,6 +934,10 @@ public class GUI {
             try {
                 if (processor.executeReserveCancel(this.reservedProduct)) {
                     JDialog cancelCompleteDialog = new JDialog(this.reserveCancelDialog, "Reservation Cancel Success", true);
+                    JLabel successLabel = new JLabel("Reservation has been successfully canceled.");
+                    successLabel.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+                    cancelCompleteDialog.add(successLabel, BorderLayout.CENTER);
+                    cancelCompleteDialog.setLocationRelativeTo(frame);
                     cancelCompleteDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
                     cancelCompleteDialog.pack();
                     cancelCompleteDialog.setVisible(true);
@@ -916,7 +945,9 @@ public class GUI {
             } catch (NotYetLoginException | NoProductFoundException | DatabaseErrorException ex) {
                 JDialog errorDialog = new JDialog(frame, "Reservation Cancel Failed by Error", true);
                 JLabel errorLabel = new JLabel(ex.getMessage());
-                errorDialog.add(errorLabel);
+                errorLabel.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+                errorDialog.add(errorLabel, BorderLayout.CENTER);
+                errorDialog.setLocationRelativeTo(frame);
                 errorDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
                 errorDialog.pack();
                 errorDialog.setVisible(true);
