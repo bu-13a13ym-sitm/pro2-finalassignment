@@ -72,8 +72,8 @@ public class SQL {
     public ArrayList<Product> productQuery(Integer minPrice, Integer maxPrice, Boolean immediate) throws NoResultsFoundException, DatabaseException {
         ArrayList<Product> products = new ArrayList<>();
         StringBuilder sq = new StringBuilder("SELECT * FROM PRODUCTS WHERE 1 = 1");
-        if (minPrice != null && minPrice > 0) sq.append(" AND PRICE >= ?");
-        if (maxPrice != null && maxPrice > 0) sq.append(" AND PRICE <= ?");
+        if (minPrice != null && minPrice > 0) sq.append(" AND RENTAL_FEE >= ?");
+        if (maxPrice != null && maxPrice > 0) sq.append(" AND RENTAL_FEE <= ?");
         if (immediate != null && immediate == true) sq.append(" AND EARLIEST_RENTAL_START = ?");
         try (PreparedStatement ps = conn.prepareStatement(sq.toString())) {
             int paramInd = 1;
@@ -117,7 +117,7 @@ public class SQL {
 
     public boolean addNewRentalProduct(Product product, int userID) throws RentalFailedException, NoResultsFoundException, DatabaseException {
         String sq1 = "UPDATE PRODUCTS SET CURRENT_STOCK  = CURRENT_STOCK - 1 WHERE PRODUCT_ID = ? AND CURRENT_STOCK > 0";
-        String sq2 = "INSERT INTO RENTAL_PRODUCTS (USER_ID, PRODUCT_ID, RENTAL_START, RENTAL_DEADLINE) VALUES (?, ?, ?, ?)";
+        String sq2 = "INSERT INTO RENTAL_PRODUCTS (USER_ID, PRODUCT_ID, RENTAL_FEE, RENTAL_START, RENTAL_DEADLINE) VALUES (?, ?, ?, ?, ?)";
         try {
             conn.setAutoCommit(false);
             try (PreparedStatement ps1 = conn.prepareStatement(sq1)) {
@@ -132,8 +132,9 @@ public class SQL {
             try (PreparedStatement ps2 = conn.prepareStatement(sq2)) {
                 ps2.setInt(1, userID);
                 ps2.setInt(2, product.getProductID());
-                ps2.setString(3, LocalDate.now().toString());
-                ps2.setString(4, LocalDate.now().plusDays(product.getRentalPeriod()).toString());
+                ps2.setInt(3, product.getRentalFee());
+                ps2.setString(4, LocalDate.now().toString());
+                ps2.setString(5, LocalDate.now().plusDays(product.getRentalPeriod()).toString());
 
                 ps2.executeUpdate();
             }
@@ -311,7 +312,7 @@ public class SQL {
 
                 try (ResultSet rs3 = ps3.executeQuery()) {
                     if (rs3.next()) {
-                        if (rs3.getInt("CURRENT_STOCK") == 1) {
+                        if (rs3.getInt("CURRENT_STOCK") == 1 && rs3.getInt("NUM_RESERVATION") > 0) {
                             Integer newRentalUserID = null;
                             String sq4 = "SELECT * FROM RESERVED_PRODUCTS WHERE PRODUCT_ID = ? ORDER BY RESERVED_PRODUCT_ID";
                             try (PreparedStatement ps4 = conn.prepareStatement(sq4)) {
