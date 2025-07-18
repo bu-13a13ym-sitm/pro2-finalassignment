@@ -24,7 +24,7 @@ public class GUI {
         }
     }
 
-    public void setGBCgrid(GridBagConstraints gbc, int x, int y, int width, int height) {
+    private void setGBCgrid(GridBagConstraints gbc, int x, int y, int width, int height) {
         gbc.gridx = x;
         gbc.gridy = y;
         gbc.gridwidth = width;
@@ -50,7 +50,7 @@ public class GUI {
         this.frame.setVisible(true);
     }
 
-    class ShowLoginPage extends MouseAdapter {
+    private class ShowLoginPage extends MouseAdapter {
         @Override
         public void mouseClicked(MouseEvent e) {
             showLoginPage();
@@ -126,7 +126,7 @@ public class GUI {
         if (!this.frame.isVisible()) this.frame.setVisible(true);
     }
 
-    class Login implements ActionListener {
+    private class Login implements ActionListener {
         private final JTextField emailField;
         private final JPasswordField passwordField;
         private final JLabel errorLabel;
@@ -148,26 +148,26 @@ public class GUI {
         }
     }
 
-    class Logout implements ActionListener {
+    private class Logout implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
             logout();
         }
     }
 
-    public void logout() {
+    private void logout() {
         this.processor.logout();
         this.showLoginPage();
     }
 
-    class ShowRegisterPage extends MouseAdapter {
+    private class ShowRegisterPage extends MouseAdapter {
         @Override
         public void mouseClicked(MouseEvent e) {
             showRegisterPage();
         }
     }
 
-    public void showRegisterPage() {
+    private void showRegisterPage() {
         this.frame.getContentPane().removeAll();
 
         JLabel titleLabel = new JLabel("<html><h2>Register new Account</h2></html>");
@@ -258,7 +258,7 @@ public class GUI {
         if (!this.frame.isVisible()) this.frame.setVisible(true);
     }
 
-    class Register implements ActionListener {
+    private class Register implements ActionListener {
         JTextField userNameField;
         JTextField emailField;
         JPasswordField passwordField;
@@ -295,14 +295,14 @@ public class GUI {
         }
     }
 
-    class ShowProductPage implements ActionListener {
+    private class ShowProductPage implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
             showProductPage();
         }
     }
 
-    public void showProductPage() {
+    private void showProductPage() {
         this.frame.getContentPane().removeAll();
 
         JPanel headerPanel = new JPanel();
@@ -363,7 +363,7 @@ public class GUI {
         if (!this.frame.isVisible()) this.frame.setVisible(true);
     }
     
-    class ShowProducts implements ActionListener {
+    private class ShowProducts implements ActionListener {
         JLabel errorLabel;
         JTextField minPriceField;
         JTextField maxPriceField;
@@ -390,7 +390,7 @@ public class GUI {
         }
     }
 
-    public void showProducts(Integer minPrice, Integer maxPrice, Boolean immediate, JPanel resultPanel, JLabel errorLabel) {
+    private void showProducts(Integer minPrice, Integer maxPrice, Boolean immediate, JPanel resultPanel, JLabel errorLabel) {
         resultPanel.removeAll();
 
         try {
@@ -456,7 +456,7 @@ public class GUI {
         resultPanel.repaint();
     }
 
-    class ShowProductDetail extends MouseAdapter {
+    private class ShowProductDetail extends MouseAdapter {
         Product product;
 
         public ShowProductDetail(Product product) {
@@ -469,7 +469,7 @@ public class GUI {
         }
     }
 
-    public void showProductDetail(Product product) {
+    private void showProductDetail(Product product) {
         JDialog detailDialog = new JDialog(this.frame, "Product Detail", true);
         detailDialog.setLayout(new BoxLayout(detailDialog, BoxLayout.Y_AXIS));
 
@@ -543,7 +543,7 @@ public class GUI {
         detailDialog.setVisible(true);
     }
 
-    class Rental implements ActionListener {
+    private class Rental implements ActionListener {
 
         Product product;
 
@@ -578,7 +578,7 @@ public class GUI {
         }
     }
 
-    class Reserve implements ActionListener {
+    private class Reserve implements ActionListener {
 
         Product product;
 
@@ -610,14 +610,14 @@ public class GUI {
         }
     }
 
-    class ShowRentalStatePage implements ActionListener {
+    private class ShowRentalStatePage implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
             showRentalStatePage();
         }
     }
 
-    public void showRentalStatePage() {
+    private void showRentalStatePage() {
         this.frame.getContentPane().removeAll();
 
         JPanel headerPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
@@ -665,7 +665,7 @@ public class GUI {
         if (!this.frame.isVisible()) this.frame.setVisible(true);
     }
 
-    public void showRentalProducts(JPanel rentalProductPanel) {
+    private void showRentalProducts(JPanel rentalProductPanel) {
         rentalProductPanel.removeAll();
 
         try {
@@ -695,7 +695,7 @@ public class GUI {
                 else rentalDeadlineLabel.setText(rentalDeadlineStr);
 
                 JButton returnButton = new JButton("RETURN");
-                returnButton.addActionListener(new ShowReturnDialog(rentalProduct, rentalProductPanel));
+                returnButton.addActionListener(new ShowReturnDialog(rentalProduct));
 
                 productPanel.add(imgLabel);
                 productPanel.add(nameLabel);
@@ -718,7 +718,7 @@ public class GUI {
         rentalProductPanel.repaint();
     }
 
-    public void showReservedProducts(JPanel reservedProductPanel) {
+    private void showReservedProducts(JPanel reservedProductPanel) {
         reservedProductPanel.removeAll();
 
         try {
@@ -747,7 +747,7 @@ public class GUI {
                 earliestRentalStartLabel.setText(earliestRentalStartStr);
 
                 JButton returnButton = new JButton("RESERVE CANCEL");
-                returnButton.addActionListener(new ShowReserveCancelDialog(reservedProduct, reservedProductPanel));
+                returnButton.addActionListener(new ShowReserveCancelDialog(reservedProduct));
 
                 productPanel.add(imgLabel);
                 productPanel.add(nameLabel);
@@ -770,13 +770,11 @@ public class GUI {
         reservedProductPanel.repaint();
     }
 
-    class ShowReturnDialog implements ActionListener {
+    private class ShowReturnDialog implements ActionListener {
         RentalProduct rentalProduct;
-        JPanel rentalProductPanel;
 
-        public ShowReturnDialog(RentalProduct rentalProduct, JPanel rentalProductPanel) {
+        public ShowReturnDialog(RentalProduct rentalProduct) {
             this.rentalProduct = rentalProduct;
-            this.rentalProductPanel = rentalProductPanel;
         }
 
         @Override
@@ -823,7 +821,7 @@ public class GUI {
         }
     }
 
-    class ReturnProduct implements ActionListener {
+    private class ReturnProduct implements ActionListener {
         RentalProduct rentalProduct;
         JDialog returnDialog;
 
@@ -852,13 +850,11 @@ public class GUI {
         }
     }
 
-    class ShowReserveCancelDialog implements ActionListener {
+    private class ShowReserveCancelDialog implements ActionListener {
         ReservedProduct reservedProduct;
-        JPanel reservedProductPanel;
 
-        public ShowReserveCancelDialog(ReservedProduct reservedProduct, JPanel reservedProductPanel) {
+        public ShowReserveCancelDialog(ReservedProduct reservedProduct) {
             this.reservedProduct = reservedProduct;
-            this.reservedProductPanel = reservedProductPanel;
         }
 
         @Override
@@ -898,7 +894,7 @@ public class GUI {
         
     }
 
-    class ReserveCancel implements ActionListener {
+    private class ReserveCancel implements ActionListener {
         ReservedProduct reservedProduct;
         JDialog reserveCancelDialog;
 
