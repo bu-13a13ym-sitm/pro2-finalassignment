@@ -48,7 +48,7 @@ public class Processor {
                 throw new IncorrectInputException("Incorrect password.");
             }
         } catch (NoResultsFoundException e) {
-            throw new NoAccountException("Your account is not registered.", e);
+            throw new NoAccountException("Email address or password is incorrect.", e);
         } catch (DatabaseException e) {
             throw new DatabaseErrorException("Failed to login due to database error.", e);
         }
