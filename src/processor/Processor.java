@@ -188,4 +188,8 @@ public class Processor {
             throw new DatabaseErrorException("Failed to cancel reservation due to database error.", e);
         }
     }
+
+    public Account getCurrentUser() {
+        return this.currentUser;
+    }
 }
