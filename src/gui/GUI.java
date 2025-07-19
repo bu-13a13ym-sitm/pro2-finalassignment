@@ -176,26 +176,45 @@ public class GUI {
         JLabel infoLabel = new JLabel("Fulfill the following fields to register your account.");
         JLabel errorLabel = new JLabel();
 
-        JLabel userNameLabel = new JLabel("user name");
+        JLabel userNameLabel = new JLabel("User Name:");
         JTextField userNameField = new JTextField();
 
         JLabel emailLabel = new JLabel("Email:");
         JTextField emailField = new JTextField();
 
-        JLabel passwordLabel = new JLabel("password");
+        JLabel passwordLabel = new JLabel("password:");
         JPasswordField passwordField = new JPasswordField();
         passwordField.setEchoChar('*');
 
-        JLabel passwordLabel2 = new JLabel("Enter your password again.");
+        JLabel passwordLabel2 = new JLabel("Enter your password again:");
         JPasswordField passwordField2 = new JPasswordField();
         passwordField2.setEchoChar('*');
+
+        JLabel paymentLabel = new JLabel("Credit Card Number:");
+        JPanel paymentPanel = new JPanel(new GridLayout(1, 7, 5, 0));
+        JTextField[] cardNumFields = new JTextField[4];
+        cardNumFields[0] = new JTextField(4);
+        paymentPanel.add(cardNumFields[0]);
+
+        for (int i = 1; i < 4; i++) {
+            cardNumFields[i] = new JTextField(4);
+            JLabel dashLabel = new JLabel("-");
+            dashLabel.setHorizontalAlignment(SwingConstants.CENTER);
+            paymentPanel.add(dashLabel);
+            paymentPanel.add(cardNumFields[i]);
+        }
+
+        JPanel securityCodePanel = new JPanel();
+        JLabel securityCodeLabel = new JLabel("Security Code:");
+        JTextField securityCodeField = new JTextField(3);
+        securityCodePanel.add(securityCodeField);
 
         JLabel loginLabel = new JLabel("<html><u><font color='blue'>Back to the login page.</font></u></html>");
         loginLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
         loginLabel.addMouseListener(new ShowLoginPage());
 
         JButton registerButton = new JButton("REGISTER");
-        registerButton.addActionListener(new Register(userNameField, emailField, passwordField, passwordField2, errorLabel));
+        registerButton.addActionListener(new Register(userNameField, emailField, passwordField, passwordField2, cardNumFields, securityCodeField, errorLabel));
 
         JPanel panel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
@@ -245,9 +264,29 @@ public class GUI {
         this.setGBCgrid(gbc, 0, currRow, 4, 1);
         panel.add(passwordLabel2, gbc);
         currRow++;
+
         this.setGBCgrid(gbc, 0, currRow, 4, 2);
         gbc.fill = GridBagConstraints.HORIZONTAL;
         panel.add(passwordField2, gbc);
+        currRow += 2;
+
+        this.setGBCgrid(gbc, 0, currRow, 4, 1);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        panel.add(paymentLabel, gbc);
+        currRow++;
+
+        this.setGBCgrid(gbc, 0, currRow, 4, 2);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        panel.add(paymentPanel, gbc);
+        currRow += 2;
+
+        this.setGBCgrid(gbc, 0, currRow, 4, 1);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        panel.add(securityCodeLabel, gbc);
+        currRow++;
+
+        this.setGBCgrid(gbc, 0, currRow, 4, 2);
+        panel.add(securityCodePanel, gbc);
         currRow += 2;
 
         this.setGBCgrid(gbc, 0, currRow, 2, 1);
@@ -270,13 +309,17 @@ public class GUI {
         JTextField emailField;
         JPasswordField passwordField;
         JPasswordField passwordField2;
+        JTextField[] cardNumFields;
+        JTextField securityCodeField;
         JLabel errorLabel;
 
-        public Register(JTextField userNameField, JTextField emailField, JPasswordField passwordField, JPasswordField passwordField2, JLabel errorLabel) {
+        public Register(JTextField userNameField, JTextField emailField, JPasswordField passwordField, JPasswordField passwordField2, JTextField[] cardNumFields, JTextField securityCodeField, JLabel errorLabel) {
             this.userNameField = userNameField;
             this.emailField = emailField;
             this.passwordField = passwordField;
             this.passwordField2 = passwordField2;
+            this.cardNumFields = cardNumFields;
+            this.securityCodeField = securityCodeField;
             this.errorLabel = errorLabel;
         }
 
@@ -290,9 +333,13 @@ public class GUI {
                 this.errorLabel.setText("passwords not match.");
                 return;
             }
+            StringBuilder cardNumBuilder = new StringBuilder();
+            for (int i = 0; i < 4; i++) cardNumBuilder.append(this.cardNumFields[i].getText());
+            String cardNumStr = cardNumBuilder.toString();
+            String securityCodeStr = this.securityCodeField.getText();
 
             try {
-                if (processor.newCustomer(userNameStr, emailStr, passwordStr)) {
+                if (processor.newCustomer(userNameStr, emailStr, passwordStr, cardNumStr, securityCodeStr)) {
                     JOptionPane.showMessageDialog(frame, "Register completed.", "Register Completed", JOptionPane.INFORMATION_MESSAGE);
                     showLoginPage();
                 }

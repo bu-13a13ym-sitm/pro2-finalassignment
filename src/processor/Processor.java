@@ -66,31 +66,41 @@ public class Processor {
         }
     }
 
-    public boolean newCustomer(String userName, String email, String password) throws EmptyInputException, EmailPatternException,  AlreadyRegisteredException, DatabaseErrorException{
+    public boolean newCustomer(String userName, String email, String password, String cardNumStr, String securityCodeStr) throws EmptyInputException, EmailPatternException,  AlreadyRegisteredException, DatabaseErrorException{
         boolean emptyFlag = false;
         StringBuilder emptyExceptionMessage = new StringBuilder();
-        if(userName == null || userName.trim().isEmpty()){
+        if (userName == null || userName.trim().isEmpty()) {
             emptyFlag = true;
-            emptyExceptionMessage.append("UserName is empty.");
+            emptyExceptionMessage.append("User Name is empty.");
         }
-        if(email == null || email.trim().isEmpty()){
+        if (email == null || email.trim().isEmpty()) {
             if(emptyFlag) emptyExceptionMessage.append(" ");
             emptyFlag = true;
             emptyExceptionMessage.append("Email is empty.");
         }
-        if(password == null || password.trim().isEmpty()){
+        if (password == null || password.trim().isEmpty()) {
             if(emptyFlag) emptyExceptionMessage.append(" ");
             emptyFlag = true;
             emptyExceptionMessage.append("Password is empty.");
         }
-        if(emptyFlag){
+        if (cardNumStr == null || cardNumStr.trim().isEmpty()) {
+            if (emptyFlag) emptyExceptionMessage.append(" ");
+            emptyFlag = true;
+            emptyExceptionMessage.append("Card Number is not fulfilled.");
+        }
+        if (securityCodeStr == null || securityCodeStr.trim().isEmpty()) {
+            if (emptyFlag) emptyExceptionMessage.append(" ");
+            emptyFlag = true;
+            emptyExceptionMessage.append("Security Code is empty.");
+        }
+        if (emptyFlag) {
             throw new EmptyInputException(emptyExceptionMessage.toString());
         }
-        if(!VALID_EMAIL_PATTERN.matcher(email).find()){
+        if (!VALID_EMAIL_PATTERN.matcher(email).find()) {
             throw new EmailPatternException("Invalid email.");
         }
         try {
-            return sql.addNewCustomer(userName, email, password);
+            return sql.addNewCustomer(userName, email, password, cardNumStr, securityCodeStr);
         } catch (UserAlreadyExistException e) {
             throw new AlreadyRegisteredException("Your account is already registered.", e);
         } catch (DatabaseException e) {

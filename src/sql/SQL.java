@@ -52,12 +52,14 @@ public class SQL {
         }
     }
 
-    public boolean addNewCustomer(String userName, String email, String password) throws UserAlreadyExistException, DatabaseException {
-        String sq = "INSERT INTO CUSTOMER_INFOS (USER_NAME, EMAIL, PASSWORD) VALUES (?, ?, ?)";
+    public boolean addNewCustomer(String userName, String email, String password, String cardNumStr, String securityCodeStr) throws UserAlreadyExistException, DatabaseException {
+        String sq = "INSERT INTO CUSTOMER_INFOS (USER_NAME, EMAIL, PASSWORD, CARD_NUM, SEC_CODE) VALUES (?, ?, ?, ? , ?)";
         try (PreparedStatement ps = conn.prepareStatement(sq)) {
             ps.setString(1, userName);
             ps.setString(2, email);
             ps.setString(3, password);
+            ps.setString(4, cardNumStr);
+            ps.setString(5, securityCodeStr);
 
             ps.executeUpdate();
         } catch (SQLException e) {
