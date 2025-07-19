@@ -535,7 +535,7 @@ public class GUI {
 
         if (product.getCurrentStock() > 0) {
             JButton rentalButton = new JButton("RENTAL");
-            rentalButton.addActionListener(new Rental(product));
+            rentalButton.addActionListener(new Rental(product, detailDialog));
 
             btnPanel.add(rentalButton, BorderLayout.EAST);
         } else {
@@ -546,7 +546,7 @@ public class GUI {
             earliestRentalStartLabel.setHorizontalAlignment(SwingConstants.RIGHT);
 
             JButton reserveButton = new JButton("RESERVE");
-            reserveButton.addActionListener(new Reserve(product));
+            reserveButton.addActionListener(new Reserve(product, detailDialog));
 
             btnPanel.add(earliestRentalStartLabel, BorderLayout.CENTER);
             btnPanel.add(reserveButton, BorderLayout.EAST);
@@ -564,11 +564,12 @@ public class GUI {
     }
 
     private class Rental implements ActionListener {
-
         Product product;
+        JDialog detailDialog;
 
-        public Rental(Product product) {
+        public Rental(Product product, JDialog detailDialog) {
             this.product = product;
+            this.detailDialog = detailDialog;
         }
         
         @Override
@@ -592,6 +593,7 @@ public class GUI {
                             @Override
                             public void windowClosed(WindowEvent e) {
                                 rentalDialog.dispose();
+                                detailDialog.dispose();
                                 showProductPage();
                             }
                         });
@@ -614,11 +616,12 @@ public class GUI {
     }
 
     private class Reserve implements ActionListener {
-
         Product product;
+        JDialog detailDialog;
 
-        public Reserve(Product product) {
+        public Reserve(Product product, JDialog detailDialog) {
             this.product = product;
+            this.detailDialog = detailDialog;
         }
 
         @Override
@@ -640,6 +643,7 @@ public class GUI {
                         @Override
                         public void windowClosed(WindowEvent e) {
                             reserveDialog.dispose();
+                            detailDialog.dispose();
                             showProductPage();
                         }
                     });
