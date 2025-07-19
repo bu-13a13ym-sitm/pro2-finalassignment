@@ -652,12 +652,25 @@ public class GUI {
     private void showRentalStatePage() {
         this.frame.getContentPane().removeAll();
 
-        JPanel headerPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        JPanel headerPanel = new JPanel(new BorderLayout());
 
+        JPanel rightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         JButton showProductsButton = new JButton("Show Product Page");
         showProductsButton.addActionListener(new ShowProductPage());
+        rightPanel.add(showProductsButton);
 
-        headerPanel.add(showProductsButton);
+        JPanel leftPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JLabel usernamLabel = new JLabel("Username: " + processor.getCurrentUser().getUserName());
+        JLabel userIdLabel = new JLabel("User ID: " + processor.getCurrentUser().getUserID());
+        JButton logoutButton = new JButton("Logout");
+        logoutButton.addActionListener(new Logout());
+
+        leftPanel.add(logoutButton);
+        leftPanel.add(usernamLabel);
+        leftPanel.add(userIdLabel);
+
+        headerPanel.add(leftPanel, BorderLayout.WEST);
+        headerPanel.add(rightPanel, BorderLayout.EAST);
 
         JPanel rentalProductPanel = new JPanel();
         this.showRentalProducts(rentalProductPanel);
