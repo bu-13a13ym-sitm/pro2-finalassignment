@@ -684,6 +684,17 @@ public class GUI {
         reservedScrollPanel.createVerticalScrollBar();
         reservedScrollPanel.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
 
+        Dimension size1 = rentalScrollPanel.getPreferredSize();
+        Dimension size2 = reservedScrollPanel.getPreferredSize();
+
+        int maxWidth = Math.max(size1.width, size2.width);
+        int maxHeight = Math.max(size1.height, size2.height);
+
+        Dimension fixedSize = new Dimension(maxWidth, maxHeight);
+
+        rentalScrollPanel.setPreferredSize(fixedSize);
+        reservedScrollPanel.setPreferredSize(fixedSize);
+
         JPanel resultPanel = new JPanel();
         resultPanel.setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
