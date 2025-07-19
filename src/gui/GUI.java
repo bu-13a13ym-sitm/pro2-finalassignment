@@ -423,7 +423,7 @@ public class GUI {
                 File imageFile = new File(product.getImageURL());
                 if (imageFile.exists()) imageIcon = new ImageIcon(product.getImageURL());
                 else imageIcon = new ImageIcon("images/no_image.png");
-                Image productImg = imageIcon.getImage().getScaledInstance(200, 200, Image.SCALE_SMOOTH);
+                Image productImg = imageIcon.getImage().getScaledInstance(300, 300, Image.SCALE_SMOOTH);
                 JLabel imgLabel = new JLabel(new ImageIcon(productImg));
                 imgLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
