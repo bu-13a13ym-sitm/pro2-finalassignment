@@ -117,7 +117,7 @@ public class SQL {
 
     public boolean addNewRentalProduct(Product product, int userID) throws RentalFailedException, NoResultsFoundException, DatabaseException {
         String sq1 = "UPDATE PRODUCTS SET CURRENT_STOCK  = CURRENT_STOCK - 1 WHERE PRODUCT_ID = ? AND CURRENT_STOCK > 0";
-        String sq2 = "INSERT INTO RENTAL_PRODUCTS (USER_ID, PRODUCT_ID, RENTAL_START, RENTAL_DEADLINE) VALUES (?, ?, ?, ?)";
+        String sq2 = "INSERT INTO RENTAL_PRODUCTS (USER_ID, PRODUCT_ID, RENTAL_FEE, RENTAL_START, RENTAL_DEADLINE) VALUES (?, ?, ?, ?, ?)";
         try {
             conn.setAutoCommit(false);
             try (PreparedStatement ps1 = conn.prepareStatement(sq1)) {
@@ -132,8 +132,9 @@ public class SQL {
             try (PreparedStatement ps2 = conn.prepareStatement(sq2)) {
                 ps2.setInt(1, userID);
                 ps2.setInt(2, product.getProductID());
-                ps2.setString(3, LocalDate.now().toString());
-                ps2.setString(4, LocalDate.now().plusDays(product.getRentalPeriod()).toString());
+                ps2.setInt(3, product.getRentalFee());
+                ps2.setString(4, LocalDate.now().toString());
+                ps2.setString(5, LocalDate.now().plusDays(product.getRentalPeriod()).toString());
 
                 ps2.executeUpdate();
             }

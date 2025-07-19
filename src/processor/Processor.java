@@ -45,10 +45,10 @@ public class Processor {
                 this.currentUser = account;
                 return true;
             }else{
-                throw new IncorrectInputException("Incorrect password.");
+                throw new IncorrectInputException("Email address or password is incorrect.");
             }
         } catch (NoResultsFoundException e) {
-            throw new NoAccountException("Your account is not registered.", e);
+            throw new NoAccountException("Email address or password is incorrect.", e);
         } catch (DatabaseException e) {
             throw new DatabaseErrorException("Failed to login due to database error.", e);
         }
@@ -126,6 +126,7 @@ public class Processor {
         } catch (NoResultsFoundException e) {
             throw new NoProductFoundException("The product is not found in the stock.", e);
         } catch (RentalFailedException | DatabaseException e) {
+            e.printStackTrace();
             throw new DatabaseErrorException("Failed to rental the product due to database error.", e);
         }
     }
