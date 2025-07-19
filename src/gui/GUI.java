@@ -100,6 +100,7 @@ public class GUI {
         currRow++;
 
         this.setGBCgrid(gbc, 0, currRow, 4, 2);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
         panel.add(emailField, gbc);
         currRow += 2;
 
@@ -108,6 +109,7 @@ public class GUI {
         currRow++;
 
         this.setGBCgrid(gbc, 0, currRow, 4, 2);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
         panel.add(passwordField, gbc);
         currRow += 2;
 
@@ -213,10 +215,12 @@ public class GUI {
         currRow++;
 
         this.setGBCgrid(gbc, 0, currRow, 4, 1);
+        gbc.anchor = GridBagConstraints.WEST;
         panel.add(userNameLabel, gbc);
         currRow++;
 
         this.setGBCgrid(gbc, 0, currRow, 4, 2);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
         panel.add(userNameField, gbc);
         currRow += 2;
 
@@ -225,6 +229,7 @@ public class GUI {
         currRow++;
 
         this.setGBCgrid(gbc, 0, currRow, 4, 2);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
         panel.add(emailField, gbc);
         currRow += 2;
 
@@ -233,6 +238,7 @@ public class GUI {
         currRow++;
 
         this.setGBCgrid(gbc, 0, currRow, 4, 2);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
         panel.add(passwordField, gbc);
         currRow += 2;
 
@@ -240,6 +246,7 @@ public class GUI {
         panel.add(passwordLabel2, gbc);
         currRow++;
         this.setGBCgrid(gbc, 0, currRow, 4, 2);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
         panel.add(passwordField2, gbc);
         currRow += 2;
 
@@ -305,13 +312,25 @@ public class GUI {
     private void showProductPage() {
         this.frame.getContentPane().removeAll();
 
-        JPanel headerPanel = new JPanel();
-        headerPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
+        JPanel headerPanel = new JPanel(new BorderLayout());
 
+        JPanel rightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         JButton showRentalStatePageButton = new JButton("Show Rental State Page");
         showRentalStatePageButton.addActionListener(new ShowRentalStatePage());
+        rightPanel.add(showRentalStatePageButton);
 
-        headerPanel.add(showRentalStatePageButton);
+        JPanel leftPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JLabel usernamLabel = new JLabel("Username: " + processor.getCurrentUser().getUserName());
+        JLabel userIdLabel = new JLabel("User ID: " + processor.getCurrentUser().getUserID());
+        JButton logoutButton = new JButton("Logout");
+        logoutButton.addActionListener(new Logout());
+
+        leftPanel.add(usernamLabel);
+        leftPanel.add(userIdLabel);
+        leftPanel.add(logoutButton);
+
+        headerPanel.add(rightPanel, BorderLayout.EAST);
+        headerPanel.add(leftPanel, BorderLayout.WEST);
 
         JLabel errorLabel = new JLabel();
 
@@ -471,7 +490,7 @@ public class GUI {
 
     private void showProductDetail(Product product) {
         JDialog detailDialog = new JDialog(this.frame, "Product Detail", true);
-        detailDialog.setLayout(new BoxLayout(detailDialog, BoxLayout.Y_AXIS));
+        detailDialog.getContentPane().setLayout(new BoxLayout(detailDialog.getContentPane(), BoxLayout.Y_AXIS));
 
         ImageIcon imageIcon;
         File imageFile = new File(product.getImageURL());
@@ -479,13 +498,13 @@ public class GUI {
         else imageIcon = new ImageIcon("images/no_image.png");
         Image productImg = imageIcon.getImage();
         JLabel imgLabel = new JLabel(new ImageIcon(productImg));
-        imgLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        imgLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         JPanel infoPanel = new JPanel();
         infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
 
         JPanel headerPanel = new JPanel();
-        headerPanel.setLayout(new BorderLayout());
+        headerPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
 
         JLabel nameLabel = new JLabel("<html><h1>" + product.getProductName() + "</h1></html>");
         JLabel rentalFeeLabel = new JLabel("\u00A5" + product.getRentalFee());
@@ -495,9 +514,10 @@ public class GUI {
         headerPanel.add(rentalFeeLabel, BorderLayout.EAST);
         headerPanel.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
 
-        JPanel detailPanel = new JPanel(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
+        JPanel detailPanel = new JPanel();
+        detailPanel.setLayout(new BoxLayout(detailPanel, BoxLayout.Y_AXIS));
 
-        JTextArea descriptionArea = new JTextArea(product.getDescription().replace(".", ".\n"));
+        JTextArea descriptionArea = new JTextArea(product.getDescription().replace(".", ".\n").replace(".\n ", ".\n"));
         descriptionArea.setEditable(false);
 
         detailPanel.add(descriptionArea);
@@ -534,9 +554,9 @@ public class GUI {
 
         btnPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
-        detailDialog.add(imgLabel);
-        detailDialog.add(infoPanel);
-        detailDialog.add(btnPanel);
+        detailDialog.getContentPane().add(imgLabel);
+        detailDialog.getContentPane().add(infoPanel);
+        detailDialog.getContentPane().add(btnPanel);
 
         detailDialog.pack();
         detailDialog.setLocationRelativeTo(frame);
@@ -561,6 +581,10 @@ public class GUI {
 
                     if (success) {
                         rentalDialog = new JDialog(frame, "Rental Success", true);
+                        JLabel successLabel = new JLabel("Rental has been successfully completed.");
+                        successLabel.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+                        rentalDialog.add(successLabel, BorderLayout.CENTER);
+                        rentalDialog.setLocationRelativeTo(frame);
                         rentalDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
                         rentalDialog.pack();
                         rentalDialog.setVisible(true);
@@ -569,7 +593,9 @@ public class GUI {
                 } catch (NotYetLoginException | NoProductFoundException | DatabaseErrorException ex) {
                     JDialog errorDialog = new JDialog(frame, "Rental Failed due to an Error", true);
                     JLabel errorLabel = new JLabel(ex.getMessage());
-                    errorDialog.add(errorLabel);
+                    errorLabel.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+                    errorDialog.add(errorLabel, BorderLayout.CENTER);
+                    errorDialog.setLocationRelativeTo(frame);
                     errorDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
                     errorDialog.pack();
                     errorDialog.setVisible(true);
@@ -594,6 +620,10 @@ public class GUI {
 
                 if (success) {
                     reserveDialog = new JDialog(frame, "Reservation Success", true);
+                    JLabel successLabel = new JLabel("Reservation has been successfully completed.");
+                    successLabel.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+                    reserveDialog.add(successLabel, BorderLayout.CENTER);
+                    reserveDialog.setLocationRelativeTo(frame);
                     reserveDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
                     reserveDialog.pack();
                     reserveDialog.setVisible(true);
@@ -602,7 +632,9 @@ public class GUI {
             } catch (NotYetLoginException | NoProductFoundException | DatabaseErrorException ex) {
                 JDialog errorDialog = new JDialog(frame, "Reservation Failed due to an Error", true);
                 JLabel errorLabel = new JLabel(ex.getMessage());
-                errorDialog.add(errorLabel);
+                errorLabel.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+                errorDialog.add(errorLabel, BorderLayout.CENTER);
+                errorDialog.setLocationRelativeTo(frame);
                 errorDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
                 errorDialog.pack();
                 errorDialog.setVisible(true);
@@ -620,12 +652,25 @@ public class GUI {
     private void showRentalStatePage() {
         this.frame.getContentPane().removeAll();
 
-        JPanel headerPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        JPanel headerPanel = new JPanel(new BorderLayout());
 
+        JPanel rightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         JButton showProductsButton = new JButton("Show Product Page");
         showProductsButton.addActionListener(new ShowProductPage());
+        rightPanel.add(showProductsButton);
 
-        headerPanel.add(showProductsButton);
+        JPanel leftPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JLabel usernameLabel = new JLabel("Username: " + processor.getCurrentUser().getUserName());
+        JLabel userIdLabel = new JLabel("User ID: " + processor.getCurrentUser().getUserID());
+        JButton logoutButton = new JButton("Logout");
+        logoutButton.addActionListener(new Logout());
+
+        leftPanel.add(logoutButton);
+        leftPanel.add(usernameLabel);
+        leftPanel.add(userIdLabel);
+
+        headerPanel.add(leftPanel, BorderLayout.WEST);
+        headerPanel.add(rightPanel, BorderLayout.EAST);
 
         JPanel rentalProductPanel = new JPanel();
         this.showRentalProducts(rentalProductPanel);
@@ -798,11 +843,15 @@ public class GUI {
             infoPanel.add(nameLabel);
 
             if (rentalProduct.getRentalDeadLine().isBefore(LocalDate.now())) {
+                JPanel overduePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
                 JLabel overdueLabel = new JLabel("<html><span style='color: red;'>Overdue!</span></html>");
                 overdueLabel.setHorizontalAlignment(SwingConstants.RIGHT);
                 JLabel overdueFeeLabel = new JLabel("Overdue Fee: \u00A5" + (this.rentalProduct.getRentalFee() / 2));
-                infoPanel.add(overdueLabel);
-                infoPanel.add(overdueFeeLabel);
+
+                overduePanel.add(overdueLabel);
+                overduePanel.add(overdueFeeLabel);
+
+                infoPanel.add(overduePanel);
             }
             
             JPanel buttonPanel = new JPanel();
@@ -835,6 +884,10 @@ public class GUI {
             try{
                 if (processor.executeReturn(this.rentalProduct)) {
                     JDialog returnCompleteDialog = new JDialog(this.returnDialog, "Return Success", true);
+                    JLabel successLabel = new JLabel("Return has been successfully completed.");
+                    successLabel.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+                    returnCompleteDialog.add(successLabel, BorderLayout.CENTER);
+                    returnCompleteDialog.setLocationRelativeTo(frame);
                     returnCompleteDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
                     returnCompleteDialog.pack();
                     returnCompleteDialog.setVisible(true);
@@ -842,7 +895,9 @@ public class GUI {
             } catch (NotYetLoginException | NoProductFoundException | DatabaseErrorException ex) {
                 JDialog errorDialog = new JDialog(frame, "Return Failed by Error", true);
                 JLabel errorLabel = new JLabel(ex.getMessage());
-                errorDialog.add(errorLabel);
+                errorLabel.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+                errorDialog.add(errorLabel, BorderLayout.CENTER);
+                errorDialog.setLocationRelativeTo(frame);
                 errorDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
                 errorDialog.pack();
                 errorDialog.setVisible(true);
@@ -873,6 +928,7 @@ public class GUI {
             imgLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
             JLabel nameLabel = new JLabel("<html><h1>" + this.reservedProduct.getProductName() + "</h1></html>");
+            nameLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
             infoPanel.add(imgLabel);
             infoPanel.add(nameLabel);
@@ -908,6 +964,10 @@ public class GUI {
             try {
                 if (processor.executeReserveCancel(this.reservedProduct)) {
                     JDialog cancelCompleteDialog = new JDialog(this.reserveCancelDialog, "Reservation Cancel Success", true);
+                    JLabel successLabel = new JLabel("Reservation has been successfully canceled.");
+                    successLabel.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+                    cancelCompleteDialog.add(successLabel, BorderLayout.CENTER);
+                    cancelCompleteDialog.setLocationRelativeTo(frame);
                     cancelCompleteDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
                     cancelCompleteDialog.pack();
                     cancelCompleteDialog.setVisible(true);
@@ -915,7 +975,9 @@ public class GUI {
             } catch (NotYetLoginException | NoProductFoundException | DatabaseErrorException ex) {
                 JDialog errorDialog = new JDialog(frame, "Reservation Cancel Failed by Error", true);
                 JLabel errorLabel = new JLabel(ex.getMessage());
-                errorDialog.add(errorLabel);
+                errorLabel.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+                errorDialog.add(errorLabel, BorderLayout.CENTER);
+                errorDialog.setLocationRelativeTo(frame);
                 errorDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
                 errorDialog.pack();
                 errorDialog.setVisible(true);
