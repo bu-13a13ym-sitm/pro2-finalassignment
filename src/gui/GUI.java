@@ -901,6 +901,13 @@ public class GUI {
                     returnCompleteDialog.setLocationRelativeTo(frame);
                     returnCompleteDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
                     returnCompleteDialog.pack();
+                    returnCompleteDialog.addWindowListener(new WindowAdapter() {
+                        @Override
+                        public void windowClosing(WindowEvent ev) {
+                            returnDialog.dispose();
+                            showRentalStatePage();
+                        }
+                    });
                     returnCompleteDialog.setVisible(true);
                 }
             } catch (NotYetLoginException | NoProductFoundException | DatabaseErrorException ex) {
@@ -981,6 +988,13 @@ public class GUI {
                     cancelCompleteDialog.setLocationRelativeTo(frame);
                     cancelCompleteDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
                     cancelCompleteDialog.pack();
+                    cancelCompleteDialog.addWindowListener(new WindowAdapter() {
+                        @Override
+                        public void windowClosing(WindowEvent ev) {
+                            reserveCancelDialog.dispose();
+                            showRentalStatePage();
+                        }
+                    });
                     cancelCompleteDialog.setVisible(true);
                 }
             } catch (NotYetLoginException | NoProductFoundException | DatabaseErrorException ex) {

@@ -103,7 +103,7 @@ public class SQL {
             ps.setInt(5, product.getNumReservation());
             ps.setInt(6, product.getRentalFee());
             ps.setString(7, product.getImageURL());
-            ps.setInt(8, product.getRentalFee());
+            ps.setInt(8, product.getRentalPeriod());
             String dateStr = product.getEarliestRentalStart().toString();
             ps.setString(9, dateStr);
 
