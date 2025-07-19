@@ -587,6 +587,15 @@ public class GUI {
                         rentalDialog.setLocationRelativeTo(frame);
                         rentalDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
                         rentalDialog.pack();
+
+                        rentalDialog.addWindowListener(new WindowAdapter() {
+                            @Override
+                            public void windowClosed(WindowEvent e) {
+                                rentalDialog.dispose();
+                                showProductPage();
+                            }
+                        });
+
                         rentalDialog.setVisible(true);
                     }
 
@@ -626,6 +635,15 @@ public class GUI {
                     reserveDialog.setLocationRelativeTo(frame);
                     reserveDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
                     reserveDialog.pack();
+
+                    reserveDialog.addWindowListener(new WindowAdapter() {
+                        @Override
+                        public void windowClosed(WindowEvent e) {
+                            reserveDialog.dispose();
+                            showProductPage();
+                        }
+                    });
+
                     reserveDialog.setVisible(true);
                 }
 
