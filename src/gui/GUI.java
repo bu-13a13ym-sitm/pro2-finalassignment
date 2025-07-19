@@ -660,13 +660,13 @@ public class GUI {
         rightPanel.add(showProductsButton);
 
         JPanel leftPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        JLabel usernamLabel = new JLabel("Username: " + processor.getCurrentUser().getUserName());
+        JLabel usernameLabel = new JLabel("Username: " + processor.getCurrentUser().getUserName());
         JLabel userIdLabel = new JLabel("User ID: " + processor.getCurrentUser().getUserID());
         JButton logoutButton = new JButton("Logout");
         logoutButton.addActionListener(new Logout());
 
         leftPanel.add(logoutButton);
-        leftPanel.add(usernamLabel);
+        leftPanel.add(usernameLabel);
         leftPanel.add(userIdLabel);
 
         headerPanel.add(leftPanel, BorderLayout.WEST);
