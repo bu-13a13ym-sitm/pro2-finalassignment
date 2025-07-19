@@ -725,7 +725,7 @@ public class GUI {
                 File imageFile = new File(rentalProduct.getImageURL());
                 if (imageFile.exists()) imageIcon = new ImageIcon(rentalProduct.getImageURL());
                 else imageIcon = new ImageIcon("images/no_image.png");
-                Image productImg = imageIcon.getImage();
+                Image productImg = imageIcon.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH);
                 JLabel imgLabel = new JLabel(new ImageIcon(productImg));
                 imgLabel.setHorizontalAlignment(SwingConstants.CENTER);
                 
@@ -778,7 +778,7 @@ public class GUI {
                 File imageFile = new File(reservedProduct.getImageURL());
                 if (imageFile.exists()) imageIcon = new ImageIcon(reservedProduct.getImageURL());
                 else imageIcon = new ImageIcon("images/no_image.png");
-                Image productImg = imageIcon.getImage();
+                Image productImg = imageIcon.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH);
                 JLabel imgLabel = new JLabel(new ImageIcon(productImg));
                 imgLabel.setHorizontalAlignment(SwingConstants.CENTER);
                 
