@@ -535,7 +535,7 @@ public class GUI {
 
         if (product.getCurrentStock() > 0) {
             JButton rentalButton = new JButton("RENTAL");
-            rentalButton.addActionListener(new Rental(product));
+            rentalButton.addActionListener(new Rental(product, detailDialog));
 
             btnPanel.add(rentalButton, BorderLayout.EAST);
         } else {
@@ -546,7 +546,7 @@ public class GUI {
             earliestRentalStartLabel.setHorizontalAlignment(SwingConstants.RIGHT);
 
             JButton reserveButton = new JButton("RESERVE");
-            reserveButton.addActionListener(new Reserve(product));
+            reserveButton.addActionListener(new Reserve(product, detailDialog));
 
             btnPanel.add(earliestRentalStartLabel, BorderLayout.CENTER);
             btnPanel.add(reserveButton, BorderLayout.EAST);
@@ -564,11 +564,12 @@ public class GUI {
     }
 
     private class Rental implements ActionListener {
-
         Product product;
+        JDialog detailDialog;
 
-        public Rental(Product product) {
+        public Rental(Product product, JDialog detailDialog) {
             this.product = product;
+            this.detailDialog = detailDialog;
         }
         
         @Override
@@ -587,6 +588,16 @@ public class GUI {
                         rentalDialog.setLocationRelativeTo(frame);
                         rentalDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
                         rentalDialog.pack();
+
+                        rentalDialog.addWindowListener(new WindowAdapter() {
+                            @Override
+                            public void windowClosed(WindowEvent e) {
+                                rentalDialog.dispose();
+                                detailDialog.dispose();
+                                showProductPage();
+                            }
+                        });
+
                         rentalDialog.setVisible(true);
                     }
 
@@ -605,11 +616,12 @@ public class GUI {
     }
 
     private class Reserve implements ActionListener {
-
         Product product;
+        JDialog detailDialog;
 
-        public Reserve(Product product) {
+        public Reserve(Product product, JDialog detailDialog) {
             this.product = product;
+            this.detailDialog = detailDialog;
         }
 
         @Override
@@ -626,6 +638,16 @@ public class GUI {
                     reserveDialog.setLocationRelativeTo(frame);
                     reserveDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
                     reserveDialog.pack();
+
+                    reserveDialog.addWindowListener(new WindowAdapter() {
+                        @Override
+                        public void windowClosed(WindowEvent e) {
+                            reserveDialog.dispose();
+                            detailDialog.dispose();
+                            showProductPage();
+                        }
+                    });
+
                     reserveDialog.setVisible(true);
                 }
 
@@ -684,6 +706,17 @@ public class GUI {
         reservedScrollPanel.createVerticalScrollBar();
         reservedScrollPanel.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
 
+        Dimension size1 = rentalScrollPanel.getPreferredSize();
+        Dimension size2 = reservedScrollPanel.getPreferredSize();
+
+        int maxWidth = Math.max(size1.width, size2.width);
+        int maxHeight = Math.max(size1.height, size2.height);
+
+        Dimension fixedSize = new Dimension(maxWidth, maxHeight);
+
+        rentalScrollPanel.setPreferredSize(fixedSize);
+        reservedScrollPanel.setPreferredSize(fixedSize);
+
         JPanel resultPanel = new JPanel();
         resultPanel.setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
@@ -715,7 +748,6 @@ public class GUI {
 
         try {
             ArrayList<RentalProduct> rentalProducts = this.processor.getRentalProducts();
-            System.out.println(rentalProducts);
             rentalProductPanel.setLayout(new BoxLayout(rentalProductPanel, BoxLayout.Y_AXIS));
 
             for (RentalProduct rentalProduct : rentalProducts) {
@@ -769,7 +801,6 @@ public class GUI {
 
         try {
             ArrayList<ReservedProduct> reservedProducts = this.processor.getReservedProduct();
-            System.out.println(reservedProducts);
             reservedProductPanel.setLayout(new BoxLayout(reservedProductPanel, BoxLayout.Y_AXIS));
 
             for (ReservedProduct reservedProduct : reservedProducts) {
@@ -892,6 +923,13 @@ public class GUI {
                     returnCompleteDialog.setLocationRelativeTo(frame);
                     returnCompleteDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
                     returnCompleteDialog.pack();
+                    returnCompleteDialog.addWindowListener(new WindowAdapter() {
+                        @Override
+                        public void windowClosing(WindowEvent ev) {
+                            returnDialog.dispose();
+                            showRentalStatePage();
+                        }
+                    });
                     returnCompleteDialog.setVisible(true);
                 }
             } catch (NotYetLoginException | NoProductFoundException | DatabaseErrorException ex) {
@@ -972,6 +1010,13 @@ public class GUI {
                     cancelCompleteDialog.setLocationRelativeTo(frame);
                     cancelCompleteDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
                     cancelCompleteDialog.pack();
+                    cancelCompleteDialog.addWindowListener(new WindowAdapter() {
+                        @Override
+                        public void windowClosing(WindowEvent ev) {
+                            reserveCancelDialog.dispose();
+                            showRentalStatePage();
+                        }
+                    });
                     cancelCompleteDialog.setVisible(true);
                 }
             } catch (NotYetLoginException | NoProductFoundException | DatabaseErrorException ex) {

@@ -89,7 +89,6 @@ public class SQL {
                 return products;
             }
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
             throw new DatabaseException("Database exception occurred.", e);
         }
     }
@@ -104,7 +103,7 @@ public class SQL {
             ps.setInt(5, product.getNumReservation());
             ps.setInt(6, product.getRentalFee());
             ps.setString(7, product.getImageURL());
-            ps.setInt(8, product.getRentalFee());
+            ps.setInt(8, product.getRentalPeriod());
             String dateStr = product.getEarliestRentalStart().toString();
             ps.setString(9, dateStr);
 
@@ -337,7 +336,7 @@ public class SQL {
                 }
             }
             
-            conn.commit();
+            if (!conn.getAutoCommit()) conn.commit();
         } catch (SQLException e) {
             try {
                 conn.rollback();
