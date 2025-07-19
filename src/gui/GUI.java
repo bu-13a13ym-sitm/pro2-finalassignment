@@ -715,6 +715,7 @@ public class GUI {
 
         try {
             ArrayList<RentalProduct> rentalProducts = this.processor.getRentalProducts();
+            System.out.println(rentalProducts);
             rentalProductPanel.setLayout(new BoxLayout(rentalProductPanel, BoxLayout.Y_AXIS));
 
             for (RentalProduct rentalProduct : rentalProducts) {
@@ -725,7 +726,7 @@ public class GUI {
                 File imageFile = new File(rentalProduct.getImageURL());
                 if (imageFile.exists()) imageIcon = new ImageIcon(rentalProduct.getImageURL());
                 else imageIcon = new ImageIcon("images/no_image.png");
-                Image productImg = imageIcon.getImage();
+                Image productImg = imageIcon.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH);
                 JLabel imgLabel = new JLabel(new ImageIcon(productImg));
                 imgLabel.setHorizontalAlignment(SwingConstants.CENTER);
                 
@@ -768,6 +769,7 @@ public class GUI {
 
         try {
             ArrayList<ReservedProduct> reservedProducts = this.processor.getReservedProduct();
+            System.out.println(reservedProducts);
             reservedProductPanel.setLayout(new BoxLayout(reservedProductPanel, BoxLayout.Y_AXIS));
 
             for (ReservedProduct reservedProduct : reservedProducts) {
@@ -778,7 +780,7 @@ public class GUI {
                 File imageFile = new File(reservedProduct.getImageURL());
                 if (imageFile.exists()) imageIcon = new ImageIcon(reservedProduct.getImageURL());
                 else imageIcon = new ImageIcon("images/no_image.png");
-                Image productImg = imageIcon.getImage();
+                Image productImg = imageIcon.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH);
                 JLabel imgLabel = new JLabel(new ImageIcon(productImg));
                 imgLabel.setHorizontalAlignment(SwingConstants.CENTER);
                 
