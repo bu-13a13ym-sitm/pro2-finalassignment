@@ -41,7 +41,7 @@ public class GUI {
                 try {
                     processor.disconnect();
                 } catch (DatabaseErrorException ex) {
-                    //
+                    JOptionPane.showMessageDialog(null, "Failed to create frame", "Error", JOptionPane.ERROR_MESSAGE);
                 }
                 frame.dispose();
             }

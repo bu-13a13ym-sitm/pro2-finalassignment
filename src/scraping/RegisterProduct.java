@@ -2,6 +2,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 import sql.*;
@@ -14,6 +15,10 @@ public class RegisterProduct {
         try {
             SQL sql = new SQL();
             List<String> lines = Files.readAllLines(Paths.get(path));
+
+            List<String> linesToKeep = new ArrayList<>();
+            if (!lines.isEmpty()) linesToKeep.add(lines.get(0));
+
             for (int i = 1; i < lines.size(); i++) {
                 String line = lines.get(i);
                 String[] fields = line.split(",");
@@ -33,8 +38,11 @@ public class RegisterProduct {
                     sql.addNewProduct(product);
                 } catch (DatabaseException e) {
                     System.out.println("Failed to add product at row " + i + line);
+                    linesToKeep.add(line);
                 }
             }
+
+            Files.write(Paths.get(path), linesToKeep);
         } catch (DatabaseException e) {
             System.out.println(e.getMessage());
         } catch (IOException e) {
