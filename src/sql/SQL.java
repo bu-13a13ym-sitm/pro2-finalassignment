@@ -43,8 +43,10 @@ public class SQL {
                     int userID = rs.getInt("USER_ID");
                     String userName = rs.getString("USER_NAME");
                     String password = rs.getString("PASSWORD");
+                    String cardNumStr = rs.getString("CARD_NUM");
+                    String securityCodeStr = rs.getString("SEC_CODE");
 
-                    return new Account(userID, userName, email, password);
+                    return new Account(userID, userName, email, password, cardNumStr, securityCodeStr);
                 } else throw new NoResultsFoundException("User not found.");
             }
         } catch (SQLException e) {
