@@ -181,7 +181,7 @@ public class Processor {
         try {
             return sql.returnProduct(product, this.currentUser.getUserID());
         } catch (NoResultsFoundException e){
-            throw new NoProductFoundException("The product is not your rental product.", e);//////////rentalProductのExceptionはもう少し分けた方が良さそう、特に"preserved product not found"のところ
+            throw new NoProductFoundException("The product is not your rental product.", e);
         } catch (ReturnFailedException | DatabaseException e){
             throw new DatabaseErrorException("Failed to return the product due to database error.", e);
         }
